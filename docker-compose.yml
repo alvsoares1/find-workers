@@ -1,0 +1,15 @@
+version: "3"
+services:
+  db:
+    image: postgres:13.7-alpine
+    environment:
+      - POSTGRES_USER=worker
+      - POSTGRES_PASSWORD=worker
+      - POSTGRES_DB=find-worker
+    ports:
+      - 5432:5432
+    volumes:
+      - find-worker-vol:/var/lib/postgresql/data
+
+volumes:
+  find-worker-vol:
