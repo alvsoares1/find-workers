@@ -1,12 +1,219 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/common.css" rel="stylesheet">
+    <link href="/css/home.css" rel="stylesheet">
 </head>
 <body>
-    <h1><%= message %></h1>
-    <p>This is a basic EJS template.</p>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-hard-hat me-2"></i>Find Workers
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Início</a>
+                    </li>
+                    
+                    <% if (typeof isAuthenticated !== 'undefined' && isAuthenticated) { %>
+                        <!-- Menu para usuários autenticados -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="/dashboard">Dashboard</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i><%= user.name %>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/profile">
+                                    <i class="fas fa-user me-2"></i>Meu Perfil
+                                </a></li>
+                                <li><a class="dropdown-item" href="/settings">
+                                    <i class="fas fa-cog me-2"></i>Configurações
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/logout">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Sair
+                                </a></li>
+                            </ul>
+                        </li>
+                    <% } else { %>
+                        <!-- Menu para usuários não autenticados -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">
+                                <i class="fas fa-sign-in-alt me-1"></i>Entrar
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">
+                        <i class="fas fa-star me-2"></i>
+                        <%= message %>
+                    </h1>
+                    <p class="lead mb-4">
+                        <% if (typeof user !== 'undefined' && user) { %>
+                            <% if (user.userType === 'client') { %>
+                                Encontre profissionais qualificados para seus projetos
+                            <% } else { %>
+                                Ofereça seus serviços e encontre novos clientes
+                            <% } %>
+                        <% } else { %>
+                            Conectando pessoas e serviços de qualidade
+                        <% } %>
+                    </p>
+                    <div class="d-flex gap-3">
+                        <% if (typeof user !== 'undefined' && user && user.userType === 'client') { %>
+                            <a href="/services" class="btn btn-primary btn-lg">
+                                <i class="fas fa-search me-2"></i>Buscar Serviços
+                            </a>
+                        <% } else if (typeof user !== 'undefined' && user && user.userType === 'worker') { %>
+                            <a href="/services" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus me-2"></i>Oferecer Serviços
+                            </a>
+                        <% } else { %>
+                            <a href="/login" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Fazer Login
+                            </a>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <i class="fas fa-handshake" style="font-size: 12rem; opacity: 0.8;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-lg-12">
+                    <h2 class="h1 mb-3">Como Funciona</h2>
+                    <p class="lead text-muted">Simples, rápido e seguro</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h5>1. Busque</h5>
+                        <p class="text-muted">Encontre o profissional ideal para seu projeto</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h5>2. Conecte</h5>
+                        <p class="text-muted">Entre em contato e negocie diretamente</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h5>3. Realize</h5>
+                        <p class="text-muted">Conclua o serviço e avalie a experiência</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 border-0 bg-transparent">
+                        <div class="card-body">
+                            <i class="fas fa-users text-primary mb-3" style="font-size: 2rem;"></i>
+                            <h3 class="h2 text-primary">1000+</h3>
+                            <p class="text-muted mb-0">Usuários Ativos</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 border-0 bg-transparent">
+                        <div class="card-body">
+                            <i class="fas fa-handshake text-success mb-3" style="font-size: 2rem;"></i>
+                            <h3 class="h2 text-success">500+</h3>
+                            <p class="text-muted mb-0">Serviços Realizados</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 border-0 bg-transparent">
+                        <div class="card-body">
+                            <i class="fas fa-star text-warning mb-3" style="font-size: 2rem;"></i>
+                            <h3 class="h2 text-warning">4.8</h3>
+                            <p class="text-muted mb-0">Avaliação Média</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 border-0 bg-transparent">
+                        <div class="card-body">
+                            <i class="fas fa-clock text-info mb-3" style="font-size: 2rem;"></i>
+                            <h3 class="h2 text-info">24h</h3>
+                            <p class="text-muted mb-0">Suporte</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-hard-hat me-2"></i>Find Workers</h5>
+                    <p class="text-muted">Conectando pessoas e serviços de qualidade desde 2025.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="social-links">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <p class="text-muted mb-0">&copy; 2025 Find Workers. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -16,8 +16,8 @@ O projeto **Find Workers** é uma aplicação web monolítica que conecta trabal
   - Responsável por todas as regras de negócio.
   - Gerencia rotas, autenticação e comunicação com o banco.
 
-- **Banco de Dados (PostgreSQL)**  
-  - Armazena informações dos usuários, serviços, avaliações, etc.
+- **Banco de Dados (MongoDB)**  
+  - Armazena informações dos usuários (clientes/trabalhadores), serviços oferecidos e solicitações de trabalho.
 
 - **CI/CD (GitHub Actions)**  
   - Automatiza testes e deploy contínuo para o ambiente de demonstração.
@@ -29,13 +29,13 @@ O projeto **Find Workers** é uma aplicação web monolítica que conecta trabal
 
 ## 🔁 Fluxo de Dados
 
-1. O cliente acessa o site e realiza o login ou cadastro.
-2. O cliente cadastra um novo serviço no sistema.
-3. O backend processa a solicitação, salva no banco e retorna a visualização.
-4. Um trabalhador visualiza os serviços disponíveis e aceita um.
-5. O backend atualiza o status do serviço.
-6. Após a conclusão, o cliente avalia o trabalhador.
-7. Toda interação é persistida no banco de dados e renderizada no frontend.
+1. O usuário acessa o site e realiza o login.
+2. **Trabalhadores** cadastram serviços disponíveis no sistema.
+3. **Clientes** visualizam os serviços e fazem solicitações (requests).
+4. O backend processa as solicitações, salva no banco e notifica os trabalhadores.
+5. Trabalhadores podem aceitar/rejeitar as solicitações.
+6. O status das solicitações é atualizado conforme o progresso do trabalho.
+7. Toda interação é persistida no MongoDB e renderizada no frontend.
 
 ---
 
@@ -45,9 +45,9 @@ O projeto **Find Workers** é uma aplicação web monolítica que conecta trabal
 |---------------|-------------------------------|
 | Frontend      | EJS, HTML5, CSS3, Bootstrap   |
 | Backend       | Node.js, Express              |
-| Banco de Dados| SQLite (dev), PostgreSQL (prod) |
+| Banco de Dados| MongoDB (local/Atlas)         |
 | CI/CD         | GitHub Actions                |
-| Deploy        | Fly.io / Vercel / Heroku      |
+| Deploy        | Vercel                        |
 | Versionamento | Git + GitHub                  |
 
 ---
@@ -65,7 +65,7 @@ flowchart TD
         B[Node.js<br>Express]
     end
     subgraph Database
-        C[(PostgreSQL<br>)]
+        C[(MongoDB<br>)]
     end
     subgraph CI/CD
         D[GitHub Actions]
@@ -75,11 +75,11 @@ flowchart TD
     end
 
     A -- HTTP Requests --> B
-    B -- SQL Queries --> C
+    B -- MongoDB Queries --> C
     D -- Automatiza Deploy --> E
     E -- Hospeda Backend/Frontend --> B
     E -- Serve Páginas --> A
 ```
 ---
 
-Última atualização: 16/06/2025
+Última atualização: 08/07/2025

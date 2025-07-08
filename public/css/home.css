@@ -1,0 +1,172 @@
+/* ==========================================================================
+   Find Workers - Home Page Styles
+   ========================================================================== */
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 60px 0;
+}
+
+.hero-section .display-4 {
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.hero-section .lead {
+    font-size: 1.25rem;
+    margin-bottom: 30px;
+}
+
+/* Features Section */
+.feature-icon {
+    font-size: 3rem;
+    color: #667eea;
+    margin-bottom: 20px;
+}
+
+.features-section {
+    padding: 80px 0;
+}
+
+.features-section h2 {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.features-section .lead {
+    color: #666;
+    margin-bottom: 50px;
+}
+
+/* Stats Section */
+.stats-section {
+    background-color: #f8f9fa;
+    padding: 60px 0;
+}
+
+.stats-card {
+    border: none;
+    background: transparent;
+    text-align: center;
+}
+
+.stats-card .card-body {
+    padding: 30px 15px;
+}
+
+.stats-card i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.stats-card h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.stats-card p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* How It Works Section */
+.how-it-works {
+    padding: 80px 0;
+}
+
+.how-it-works .card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    height: 100%;
+}
+
+.how-it-works .card:hover {
+    transform: translateY(-5px);
+}
+
+.how-it-works .card-body {
+    padding: 30px;
+}
+
+.how-it-works h5 {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.how-it-works p {
+    color: #666;
+    margin-bottom: 0;
+}
+
+/* Footer */
+.footer {
+    background: #333;
+    color: white;
+    padding: 50px 0 30px;
+}
+
+.footer h5 {
+    color: white;
+    margin-bottom: 20px;
+}
+
+.footer p {
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+.footer .social-links a {
+    color: #ccc;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.footer .social-links a:hover {
+    color: #667eea;
+}
+
+.footer hr {
+    border-color: #555;
+    margin: 30px 0;
+}
+
+.footer .text-center p {
+    color: #999;
+    margin-bottom: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 40px 0;
+        text-align: center;
+    }
+    
+    .hero-section .display-4 {
+        font-size: 2rem;
+    }
+    
+    .features-section,
+    .how-it-works {
+        padding: 60px 0;
+    }
+    
+    .stats-section {
+        padding: 40px 0;
+    }
+    
+    .stats-card h3 {
+        font-size: 2rem;
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+    }
+}
