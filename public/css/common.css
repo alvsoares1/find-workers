@@ -1,0 +1,230 @@
+/* ==========================================================================
+   Find Workers - Common Styles
+   ========================================================================== */
+
+/* Variables */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --dark-color: #1f2937;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --border-radius: 10px;
+    --border-radius-lg: 20px;
+    --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+/* Enhanced Button Styles */
+.btn {
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    color: white;
+}
+
+.btn-success {
+    background: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.btn-warning {
+    background: var(--warning-color);
+    border-color: var(--warning-color);
+}
+
+.btn-danger {
+    background: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+/* Modern Card Styles */
+.card {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+    font-weight: 600;
+}
+
+/* Modern Form Styles */
+.form-control, .form-select {
+    border: 2px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    padding: 12px 16px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Alert Styles */
+.alert {
+    border: none;
+    border-radius: var(--border-radius);
+    border-left: 4px solid;
+}
+
+.alert-success { border-left-color: var(--success-color); }
+.alert-warning { border-left-color: var(--warning-color); }
+.alert-danger { border-left-color: var(--danger-color); }
+.alert-info { border-left-color: var(--primary-color); }
+
+/* Badge Styles */
+.badge {
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    padding: 0.5em 0.75em;
+}
+
+/* Loading States */
+.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--gray-300);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Utility Classes */
+.text-gradient {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.bg-gradient-primary {
+    background: var(--primary-gradient);
+}
+
+.border-gradient {
+    border: 2px solid transparent;
+    background: linear-gradient(white, white) padding-box, var(--primary-gradient) border-box;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Selection Color */
+::selection {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Focus Outline */
+*:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --gray-50: #1f2937;
+        --gray-100: #374151;
+        --gray-200: #4b5563;
+        --gray-300: #6b7280;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .card {
+        margin-bottom: 20px;
+    }
+}
+
+/* Form Check Card Styles */
+.form-check-card {
+    border: 2px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    text-align: center;
+    transition: var(--transition);
+    cursor: pointer;
+    height: 100%;
+}
+
+.form-check-card:hover {
+    border-color: var(--primary-color);
+    background-color: var(--gray-50);
+}
+
+.form-check-card .form-check-input:checked ~ .form-check-label {
+    color: var(--primary-color);
+}
+
+.form-check-card .form-check-input:checked ~ .form-check-label i {
+    color: var(--primary-color);
+}
+
+.form-check-card .form-check-input {
+    position: absolute;
+    opacity: 0;
+}
+
+.form-check-card .form-check-input:checked + .form-check-label {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+}

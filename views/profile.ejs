@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/common.css" rel="stylesheet">
+    <link href="/css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-hard-hat me-2"></i>Find Workers
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/profile">
+                            <i class="fas fa-user me-1"></i>Perfil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/settings">
+                            <i class="fas fa-cog me-1"></i>Configurações
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i><%= user.name %>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/profile">
+                                <i class="fas fa-user me-2"></i>Meu Perfil
+                            </a></li>
+                            <li><a class="dropdown-item" href="/settings">
+                                <i class="fas fa-cog me-2"></i>Configurações
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>Sair
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Messages -->
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <%= success %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <%= error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+
+        <div class="row">
+            <!-- Profile Card -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="profile-avatar mb-3">
+                            <i class="fas fa-user-circle text-primary" style="font-size: 80px;"></i>
+                        </div>
+                        <h5 class="card-title"><%= user.name %></h5>
+                        <p class="text-muted"><%= user.email %></p>
+                        <span class="badge bg-primary">
+                            <% if (user.userType === 'client') { %>
+                                <i class="fas fa-user me-1"></i>Cliente
+                            <% } else if (user.userType === 'worker') { %>
+                                <i class="fas fa-hard-hat me-1"></i>Prestador
+                            <% } else if (user.userType === 'admin') { %>
+                                <i class="fas fa-crown me-1"></i>Administrador
+                            <% } %>
+                        </span>
+                        <hr>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-alt me-1"></i>
+                            Membro desde <%= new Date(user.createdAt).toLocaleDateString('pt-BR') %>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Form -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-edit me-2"></i>Editar Perfil
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="/profile" method="POST">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">
+                                            <i class="fas fa-user me-1"></i>Nome completo
+                                        </label>
+                                        <input type="text" class="form-control" id="name" name="name" 
+                                               value="<%= user.name %>" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">
+                                            <i class="fas fa-envelope me-1"></i>Email
+                                        </label>
+                                        <input type="email" class="form-control" id="email" 
+                                               value="<%= user.email %>" disabled>
+                                        <small class="form-text text-muted">
+                                            O email não pode ser alterado
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="phone" class="form-label">
+                                            <i class="fas fa-phone me-1"></i>Telefone
+                                        </label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" 
+                                               value="<%= user.phone || '' %>" placeholder="(11) 99999-9999">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="userType" class="form-label">
+                                            <i class="fas fa-tag me-1"></i>Tipo de conta
+                                        </label>
+                                        <input type="text" class="form-control" id="userType" 
+                                               value="<% if (user.userType === 'client') { %>Cliente<% } else if (user.userType === 'worker') { %>Prestador<% } else if (user.userType === 'admin') { %>Administrador<% } %>" 
+                                               disabled>
+                                        <small class="form-text text-muted">
+                                            O tipo de conta não pode ser alterado
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+                            
+                            <h6 class="mb-3">
+                                <i class="fas fa-lock me-2"></i>Alterar Senha
+                                <small class="text-muted">(Deixe em branco para manter a senha atual)</small>
+                            </h6>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="currentPassword" class="form-label">Senha atual</label>
+                                        <input type="password" class="form-control" id="currentPassword" 
+                                               name="currentPassword" placeholder="Digite sua senha atual">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="newPassword" class="form-label">Nova senha</label>
+                                        <input type="password" class="form-control" id="newPassword" 
+                                               name="newPassword" placeholder="Digite a nova senha">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="confirmNewPassword" class="form-label">Confirmar nova senha</label>
+                                        <input type="password" class="form-control" id="confirmNewPassword" 
+                                               name="confirmNewPassword" placeholder="Confirme a nova senha">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="/dashboard" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i>Voltar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Salvar Alterações
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Validação de senha
+        document.getElementById('confirmNewPassword').addEventListener('input', function() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = this.value;
+            
+            if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+                this.setCustomValidity('As senhas não coincidem');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        // Auto-dismiss alerts
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                if (alert.querySelector('.btn-close')) {
+                    bootstrap.Alert.getOrCreateInstance(alert).close();
+                }
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

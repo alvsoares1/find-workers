@@ -1,0 +1,10 @@
+# Vercel ignore file
+node_modules
+.env
+.env.local
+.DS_Store
+*.log
+.git
+docs/
+scripts/dev.*
+docker-compose.yml
