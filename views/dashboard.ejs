@@ -116,7 +116,7 @@
                                                 Serviços Ativos
                                             <% } %>
                                         </div>
-                                        <div class="h5 mb-0">5</div>
+                                        <div class="h5 mb-0"><%= stats.active %></div>
                                     </div>
                                 </div>
                             </div>
@@ -131,7 +131,7 @@
                                     </div>
                                     <div class="flex-grow-1 ms-3">
                                         <div class="small text-muted">Concluídos</div>
-                                        <div class="h5 mb-0">12</div>
+                                        <div class="h5 mb-0"><%= stats.completed %></div>
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +146,7 @@
                                     </div>
                                     <div class="flex-grow-1 ms-3">
                                         <div class="small text-muted">Avaliação</div>
-                                        <div class="h5 mb-0">4.8</div>
+                                        <div class="h5 mb-0"><%= stats.rating %></div>
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +161,7 @@
                                     </div>
                                     <div class="flex-grow-1 ms-3">
                                         <div class="small text-muted">Este Mês</div>
-                                        <div class="h5 mb-0">R$ 2.500</div>
+                                        <div class="h5 mb-0">R$ <%= stats.earnings %></div>
                                     </div>
                                 </div>
                             </div>
@@ -179,33 +179,26 @@
                                 </h5>
                             </div>
                             <div class="card-body">
-                                <div class="activity-item">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h6 class="mb-1">Novo serviço de jardinagem</h6>
-                                            <p class="text-muted small mb-0">Solicitação recebida para manutenção de jardim</p>
+                                <% if (recentActivity && recentActivity.length > 0) { %>
+                                    <% recentActivity.forEach(function(activity) { %>
+                                        <div class="activity-item">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h6 class="mb-1"><%= activity.title %></h6>
+                                                    <p class="text-muted small mb-0"><%= activity.description %></p>
+                                                </div>
+                                                <small class="text-muted">
+                                                    <%= new Date(activity.time).toLocaleDateString('pt-BR') %>
+                                                </small>
+                                            </div>
                                         </div>
-                                        <small class="text-muted">2h atrás</small>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="text-center text-muted py-4">
+                                        <i class="fas fa-inbox fa-2x mb-3"></i>
+                                        <p>Nenhuma atividade recente</p>
                                     </div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h6 class="mb-1">Serviço concluído</h6>
-                                            <p class="text-muted small mb-0">Reparo elétrico finalizado com sucesso</p>
-                                        </div>
-                                        <small class="text-muted">1 dia atrás</small>
-                                    </div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h6 class="mb-1">Nova avaliação</h6>
-                                            <p class="text-muted small mb-0">Você recebeu uma avaliação de 5 estrelas</p>
-                                        </div>
-                                        <small class="text-muted">2 dias atrás</small>
-                                    </div>
-                                </div>
+                                <% } %>
                             </div>
                         </div>
                     </div>
