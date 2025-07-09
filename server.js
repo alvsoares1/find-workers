@@ -44,6 +44,7 @@ app.use(Logger.http);
 
 const authRoutes = require('./routes/auth');
 const indexRoutes = require('./routes/index');
+const servicesRoutes = require('./routes/service')
 const { addUserToViews } = require('./middleware/auth');
 
 app.use(addUserToViews);
@@ -51,6 +52,7 @@ app.use(addUserToViews);
 // Configurar rotas
 app.use('/', authRoutes);
 app.use('/', indexRoutes);
+app.use('/services',servicesRoutes)
 
 // Middleware para 404
 app.use((req, res) => {

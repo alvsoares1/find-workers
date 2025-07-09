@@ -1,51 +1,156 @@
-// Modelo Service.js - Estrutura básica sem implementação do banco
-// TODO: Implementar conexão com banco de dados quando necessário
+const { ObjectId } = require('mongodb');
+const { getDB } = require('../db/database');
+const Validator = require('../utils/validator');
+const Logger = require('../utils/logger');
 
 class Service {
-    constructor(serviceData) {
-        this.title = serviceData.title;
-        this.description = serviceData.description;
-        this.price = serviceData.price;
-        this.workerId = serviceData.workerId;
-        this.category = serviceData.category;
-        this.status = serviceData.status || 'disponível';
-        this.createdAt = serviceData.createdAt || new Date();
-        this.updatedAt = serviceData.updatedAt || new Date();
-        this._id = serviceData._id;
+  constructor(serviceData) {
+    this.title = Validator.sanitizeString(serviceData.title);
+    this.description = serviceData.description ? Validator.sanitizeString(serviceData.description) : '';
+    this.category = Validator.sanitizeString(serviceData.category);
+    this.price = typeof serviceData.price === 'number' ? serviceData.price : 0;
+    this.status = serviceData.status || 'disponível';
+
+    if (serviceData.workerId) {
+      this.workerId = typeof serviceData.workerId === 'string' ? new ObjectId(serviceData.workerId) : serviceData.workerId;
+    } else {
+      this.workerId = null;
     }
 
-    // Método estático que retorna dados mockados para desenvolvimento
-    static async find(query = {}) {
-        // Retorna array vazio por padrão - será mockado onde necessário
-        return [];
+    this.createdAt = serviceData.createdAt || new Date();
+    this.updatedAt = serviceData.updatedAt || new Date();
+
+    if (serviceData._id) {
+      this._id = new ObjectId(serviceData._id);
+    }
+  }
+
+  static getCollection() {
+    return getDB().collection('services');
+  }
+
+  async save() {
+    try {
+      const collection = Service.getCollection();
+
+      if (!this.title || !this.category || !this.workerId) {
+        throw new Error('Título, categoria e workerId são obrigatórios');
+      }
+
+      if (!this._id) {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+
+        const result = await collection.insertOne(this.toObject());
+        this._id = result.insertedId;
+
+        Logger.info(`Novo serviço criado: ${this.title} por worker ${this.workerId.toString()}`);
+      } else {
+        this.updatedAt = new Date();
+
+        await collection.updateOne(
+          { _id: this._id },
+          { $set: this.toObject() }
+        );
+
+        Logger.info(`Serviço atualizado: ${this._id.toString()}`);
+      }
+
+      return this;
+    } catch (error) {
+      Logger.error('Erro ao salvar serviço:', error);
+      throw error;
+    }
+  }
+
+  static async findAll() {
+    const collection = Service.getCollection();
+    const cursor = collection.find({});
+    const services = await cursor.toArray();
+    return services.map(serviceData => new Service(serviceData));
+  }
+
+  static async findById(id) {
+    const collection = Service.getCollection();
+    const serviceData = await collection.findOne({ _id: new ObjectId(id) });
+    return serviceData ? new Service(serviceData) : null;
+  }
+
+  static async findByWorkerId(workerId) {
+    const collection = Service.getCollection();
+    const id = typeof workerId === 'string' ? new ObjectId(workerId) : workerId;
+    const cursor = collection.find({ workerId: id });
+    const services = await cursor.toArray();
+    return services.map(serviceData => new Service(serviceData));
+  }
+
+  static async findByCategory(category) {
+    const collection = Service.getCollection();
+    const cursor = collection.find({ category });
+    const services = await cursor.toArray();
+    return services.map(serviceData => new Service(serviceData));
+  }
+
+  static async findAvailable() {
+    const collection = Service.getCollection();
+    const cursor = collection.find({ status: 'disponível' });
+    const services = await cursor.toArray();
+    return services.map(serviceData => new Service(serviceData));
+  }
+
+  static async create(serviceData) {
+    const service = new Service(serviceData);
+    return await service.save();
+  }
+
+  static async update(id, updateData) {
+    const collection = Service.getCollection();
+    updateData.updatedAt = new Date();
+
+    const result = await collection.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    );
+
+    return result.value ? new Service(result.value) : null;
+  }
+
+  static async delete(id) {
+    const collection = Service.getCollection();
+    const result = await collection.findOneAndDelete({ _id: new ObjectId(id) });
+    return result.value ? new Service(result.value) : null;
+  }
+
+  static async updateStatus(id, status) {
+    const collection = Service.getCollection();
+    const result = await collection.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: { status, updatedAt: new Date() } },
+      { returnDocument: 'after' }
+    );
+
+    return result.value ? new Service(result.value) : null;
+  }
+
+  toObject() {
+    const obj = {
+      title: this.title,
+      description: this.description,
+      category: this.category,
+      price: this.price,
+      status: this.status,
+      workerId: this.workerId,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
+
+    if (this._id) {
+      obj._id = this._id;
     }
 
-    static async findById(id) {
-        return null;
-    }
-
-    static async findOne(query) {
-        return null;
-    }
-
-    async save() {
-        // TODO: Implementar salvamento no banco
-        return this;
-    }
-
-    toObject() {
-        return {
-            _id: this._id,
-            title: this.title,
-            description: this.description,
-            price: this.price,
-            workerId: this.workerId,
-            category: this.category,
-            status: this.status,
-            createdAt: this.createdAt,
-            updatedAt: this.updatedAt
-        };
-    }
+    return obj;
+  }
 }
 
 module.exports = Service;
