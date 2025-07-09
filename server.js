@@ -42,23 +42,11 @@ app.use(Logger.http);
     }
 })();
 
-// Importar rotas
 const authRoutes = require('./routes/auth');
 const indexRoutes = require('./routes/index');
 const { addUserToViews } = require('./middleware/auth');
 
-// Middleware global
 app.use(addUserToViews);
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-    res.status(200).json({
-        status: 'OK',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        environment: process.env.NODE_ENV || 'development'
-    });
-});
 
 // Configurar rotas
 app.use('/', authRoutes);
@@ -91,18 +79,16 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Iniciar servidor
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
-    Logger.success(`🚀 Server is running on http://localhost:${PORT}`);
+    Logger.success(`Server is running on http://localhost:${PORT}`);
     Logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
-// Graceful shutdown
 process.on('SIGINT', () => {
-    Logger.info('🛑 Shutting down gracefully...');
+    Logger.info('Shutting down gracefully...');
     server.close(() => {
-        Logger.info('✅ Server closed');
+        Logger.info('Server closed');
         process.exit(0);
     });
 });

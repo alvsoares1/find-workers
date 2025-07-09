@@ -1,28 +1,6 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
-    container_name: find-workers-app
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - MONGODB_URI=mongodb://mongodb:27017/find_workers
-      - JWT_SECRET=find-workers-super-secret-jwt-key-2025
-    depends_on:
-      - mongodb
-    networks:
-      - find-workers-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
   mongodb:
     image: mongo:7.0
     container_name: find-workers-mongo
@@ -36,12 +14,6 @@ services:
       - ./data/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
     networks:
       - find-workers-network
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
 volumes:
   mongodb_data:
