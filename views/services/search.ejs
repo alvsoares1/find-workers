@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca Avançada - Find Workers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/common.css" rel="stylesheet">
+    <link href="/css/dashboard.css" rel="stylesheet">
+    <link href="/css/services.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <%- include('../partials/sidebar', { user: user, currentPage: 'services' }) %>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content p-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>
+                        <i class="fas fa-search me-2"></i>Busca Avançada de Serviços
+                    </h2>
+                    <a href="/services" class="btn btn-outline-secondary">
+                        <i class="fas fa-list me-2"></i>Busca Simples
+                    </a>
+                </div>
+
+                <!-- Filtros Avançados -->
+                <div class="card filters-card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-filter me-2"></i>Filtros Avançados
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="advancedSearchForm">
+                            <div class="row">
+                                <!-- Busca por texto -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="searchText" class="form-label">Buscar por</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="searchText" 
+                                               placeholder="Digite palavras-chave...">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                                                data-bs-toggle="dropdown">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><h6 class="dropdown-header">Buscar em:</h6></li>
+                                            <li>
+                                                <div class="form-check dropdown-item-text">
+                                                    <input class="form-check-input" type="checkbox" id="searchTitle" checked>
+                                                    <label class="form-check-label" for="searchTitle">Título</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check dropdown-item-text">
+                                                    <input class="form-check-input" type="checkbox" id="searchDescription" checked>
+                                                    <label class="form-check-label" for="searchDescription">Descrição</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check dropdown-item-text">
+                                                    <input class="form-check-input" type="checkbox" id="searchTags">
+                                                    <label class="form-check-label" for="searchTags">Tags</label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Categoria -->
+                                <div class="col-md-3 mb-3">
+                                    <label for="categoryFilter" class="form-label">Categoria</label>
+                                    <select class="form-select" id="categoryFilter" multiple>
+                                        <option value="Construção">Construção</option>
+                                        <option value="Elétrica">Elétrica</option>
+                                        <option value="Hidráulica">Hidráulica</option>
+                                        <option value="Pintura">Pintura</option>
+                                        <option value="Jardinagem">Jardinagem</option>
+                                        <option value="Limpeza">Limpeza</option>
+                                        <option value="Marcenaria">Marcenaria</option>
+                                        <option value="Informática">Informática</option>
+                                        <option value="Mecânica">Mecânica</option>
+                                        <option value="Outros">Outros</option>
+                                    </select>
+                                    <small class="form-text text-muted">Ctrl+Click para múltiplas</small>
+                                </div>
+
+                                <!-- Ordenação -->
+                                <div class="col-md-3 mb-3">
+                                    <label for="sortBy" class="form-label">Ordenar por</label>
+                                    <select class="form-select" id="sortBy">
+                                        <option value="relevance">Relevância</option>
+                                        <option value="price_asc">Menor preço</option>
+                                        <option value="price_desc">Maior preço</option>
+                                        <option value="rating">Melhor avaliação</option>
+                                        <option value="newest">Mais recentes</option>
+                                        <option value="popular">Mais populares</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Faixa de preço -->
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Faixa de Preço (R$)</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="priceMin" 
+                                                   placeholder="Mín" min="0" step="0.01">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="priceMax" 
+                                                   placeholder="Máx" min="0" step="0.01">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Localização -->
+                                <div class="col-md-4 mb-3">
+                                    <label for="location" class="form-label">Localização</label>
+                                    <input type="text" class="form-control" id="location" 
+                                           placeholder="Cidade, estado ou região">
+                                </div>
+
+                                <!-- Distância -->
+                                <div class="col-md-4 mb-3">
+                                    <label for="distance" class="form-label">Distância máxima</label>
+                                    <select class="form-select" id="distance">
+                                        <option value="">Qualquer distância</option>
+                                        <option value="5">Até 5 km</option>
+                                        <option value="10">Até 10 km</option>
+                                        <option value="25">Até 25 km</option>
+                                        <option value="50">Até 50 km</option>
+                                        <option value="100">Até 100 km</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Avaliação mínima -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Avaliação mínima</label>
+                                    <div class="d-flex align-items-center">
+                                        <input type="range" class="form-range me-3" id="minRating" 
+                                               min="0" max="5" step="0.5" value="0">
+                                        <span class="badge bg-warning text-dark" id="ratingDisplay">
+                                            <i class="fas fa-star"></i> 0+
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Disponibilidade -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Disponibilidade</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="availableOnly" checked>
+                                        <label class="form-check-label" for="availableOnly">
+                                            Apenas disponíveis
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="urgentAvailable">
+                                        <label class="form-check-label" for="urgentAvailable">
+                                            Aceita urgência
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Preço negociável -->
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Condições</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="negotiablePrice">
+                                        <label class="form-check-label" for="negotiablePrice">
+                                            Preço negociável
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="allowsScheduling">
+                                        <label class="form-check-label" for="allowsScheduling">
+                                            Permite agendamento
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Botões -->
+                                <div class="col-md-3 mb-3 d-flex flex-column gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search me-2"></i>Buscar
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="clearAdvancedFilters()">
+                                        <i class="fas fa-times me-2"></i>Limpar
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Resultados -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 id="resultsCount">Carregando resultados...</h5>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary btn-sm" id="viewGrid" title="Visualização em grade">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm active" id="viewList" title="Visualização em lista">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm" onclick="saveSearch()" title="Salvar busca">
+                            <i class="fas fa-bookmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista de Resultados -->
+                <div id="searchResults">
+                    <!-- Resultados serão carregados aqui via JavaScript -->
+                </div>
+
+                <!-- Paginação -->
+                <nav aria-label="Paginação dos resultados" class="mt-4">
+                    <ul class="pagination justify-content-center" id="pagination">
+                        <!-- Paginação será gerada via JavaScript -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Salvar Busca -->
+    <div class="modal fade" id="saveSearchModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-bookmark me-2"></i>Salvar Busca
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="searchName" class="form-label">Nome da busca</label>
+                        <input type="text" class="form-control" id="searchName" 
+                               placeholder="Ex: Eletricistas em São Paulo">
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="emailNotifications">
+                            <label class="form-check-label" for="emailNotifications">
+                                Receber notificações por email quando novos serviços corresponderem a esta busca
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmSaveSearch()">
+                        <i class="fas fa-save me-2"></i>Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/advanced-search.js"></script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Serviço - Find Workers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/common.css" rel="stylesheet">
+    <link href="/css/dashboard.css" rel="stylesheet">
+    <link href="/css/request.css" rel="stylesheet">
+    <link href="/css/services.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <%- include('../partials/sidebar', { user: user, currentPage: 'services' }) %>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content p-4">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/services">Serviços</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Detalhes</li>
+                    </ol>
+                </nav>
+
+                <!-- Messages -->
+                <% if (typeof success !== 'undefined' && success) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <%= success %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <%= error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <div class="row">
+                    <!-- Detalhes do Serviço -->
+                    <div class="col-lg-8">
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4 class="mb-0">
+                                    <% if (typeof service !== 'undefined' && service) { %>
+                                        <%= service.title %>
+                                    <% } else { %>
+                                        Instalação Elétrica Residencial
+                                    <% } %>
+                                </h4>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-primary fs-6">
+                                        <% if (typeof service !== 'undefined' && service) { %>
+                                            <%= service.category %>
+                                        <% } else { %>
+                                            Elétrica
+                                        <% } %>
+                                    </span>
+                                    <% if (typeof service !== 'undefined' && service && service.status !== 'disponível') { %>
+                                        <span class="badge bg-secondary fs-6">Indisponível</span>
+                                    <% } else { %>
+                                        <span class="badge bg-success fs-6">Disponível</span>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <h5 class="text-success mb-0">
+                                            R$ <% if (typeof service !== 'undefined' && service) { %>
+                                                <%= service.price.toFixed(2) %>
+                                            <% } else { %>
+                                                150,00
+                                            <% } %>
+                                        </h5>
+                                        <small class="text-muted">Preço do serviço</small>
+                                    </div>
+                                    <div class="col-md-6 text-md-end">
+                                        <h6 class="mb-0">
+                                            <% if (typeof service !== 'undefined' && service && service.duration) { %>
+                                                <%= service.duration %>
+                                            <% } else { %>
+                                                4 horas
+                                            <% } %>
+                                        </h6>
+                                        <small class="text-muted">Duração estimada</small>
+                                    </div>
+                                </div>
+
+                                <h6>Descrição</h6>
+                                <p class="text-muted mb-4">
+                                    <% if (typeof service !== 'undefined' && service) { %>
+                                        <%= service.description %>
+                                    <% } else { %>
+                                        Serviço completo de instalação elétrica para residências, incluindo fiação, tomadas, 
+                                        interruptores e quadro de distribuição. Trabalho realizado seguindo todas as normas 
+                                        de segurança e com materiais de qualidade. Ideal para casas novas ou reformas.
+                                    <% } %>
+                                </p>
+
+                                <% if ((typeof service !== 'undefined' && service && service.tags && service.tags.length > 0) || typeof service === 'undefined') { %>
+                                    <h6>Tags</h6>
+                                    <div class="mb-4">
+                                        <% if (typeof service !== 'undefined' && service && service.tags) { %>
+                                            <% service.tags.forEach(function(tag) { %>
+                                                <span class="badge bg-light text-dark me-1">#<%= tag %></span>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <span class="badge bg-light text-dark me-1">#residencial</span>
+                                            <span class="badge bg-light text-dark me-1">#elétrica</span>
+                                            <span class="badge bg-light text-dark me-1">#instalação</span>
+                                            <span class="badge bg-light text-dark me-1">#segurança</span>
+                                        <% } %>
+                                    </div>
+                                <% } %>
+
+                                <% if (user.userType === 'client') { %>
+                                    <div class="d-flex gap-2">
+                                        <% if ((typeof service !== 'undefined' && service && service.status === 'disponível') || typeof service === 'undefined') { %>
+                                            <button class="btn btn-primary btn-lg flex-fill" onclick="requestService()">
+                                                <i class="fas fa-paper-plane me-2"></i>Solicitar Serviço
+                                            </button>
+                                        <% } else { %>
+                                            <button class="btn btn-secondary btn-lg flex-fill" disabled>
+                                                <i class="fas fa-ban me-2"></i>Serviço Indisponível
+                                            </button>
+                                        <% } %>
+                                        <button class="btn btn-outline-info" onclick="shareService()">
+                                            <i class="fas fa-share-alt"></i>
+                                        </button>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Avaliações (Mock) -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-star me-2"></i>Avaliações (4)
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Resumo de avaliações -->
+                                <div class="row mb-4">
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <h2 class="mb-0">4.8</h2>
+                                            <div class="text-warning mb-2">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <small class="text-muted">4 avaliações</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <span class="me-2">5</span>
+                                                <div class="progress flex-fill me-2" style="height: 8px;">
+                                                    <div class="progress-bar bg-warning" style="width: 75%"></div>
+                                                </div>
+                                                <span class="small text-muted">3</span>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <span class="me-2">4</span>
+                                                <div class="progress flex-fill me-2" style="height: 8px;">
+                                                    <div class="progress-bar bg-warning" style="width: 25%"></div>
+                                                </div>
+                                                <span class="small text-muted">1</span>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <span class="me-2">3</span>
+                                                <div class="progress flex-fill me-2" style="height: 8px;">
+                                                    <div class="progress-bar bg-warning" style="width: 0%"></div>
+                                                </div>
+                                                <span class="small text-muted">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Lista de avaliações -->
+                                <div class="reviews-list">
+                                    <div class="review-item border-bottom pb-3 mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="user-avatar-small me-3">M</div>
+                                            <div>
+                                                <h6 class="mb-0">Maria Silva</h6>
+                                                <div class="text-warning small">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted ms-auto">há 2 dias</small>
+                                        </div>
+                                        <p class="mb-0">Excelente trabalho! Muito profissional e pontual. Recomendo!</p>
+                                    </div>
+
+                                    <div class="review-item border-bottom pb-3 mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="user-avatar-small me-3">J</div>
+                                            <div>
+                                                <h6 class="mb-0">João Santos</h6>
+                                                <div class="text-warning small">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="far fa-star"></i>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted ms-auto">há 1 semana</small>
+                                        </div>
+                                        <p class="mb-0">Bom serviço, ficou muito bem feito. Preço justo.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar de informações -->
+                    <div class="col-lg-4">
+                        <!-- Informações do Prestador -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-user me-2"></i>Prestador de Serviço
+                                </h6>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="user-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+                                    <% if (typeof service !== 'undefined' && service && service.workerId) { %>
+                                        <%= service.workerId.name.charAt(0).toUpperCase() %>
+                                    <% } else { %>
+                                        J
+                                    <% } %>
+                                </div>
+                                <h5>
+                                    <% if (typeof service !== 'undefined' && service && service.workerId) { %>
+                                        <%= service.workerId.name %>
+                                    <% } else { %>
+                                        João Silva
+                                    <% } %>
+                                </h5>
+                                <p class="text-muted mb-3">Eletricista Profissional</p>
+                                
+                                <div class="row text-center mb-3">
+                                    <div class="col-4">
+                                        <h6 class="mb-0">4.8</h6>
+                                        <small class="text-muted">Avaliação</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <h6 class="mb-0">127</h6>
+                                        <small class="text-muted">Serviços</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <h6 class="mb-0">3 anos</h6>
+                                        <small class="text-muted">Experiência</small>
+                                    </div>
+                                </div>
+
+                                <% if (user.userType === 'client') { %>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-outline-primary flex-fill" onclick="viewWorkerProfile()">
+                                            <i class="fas fa-eye me-1"></i>Ver Perfil
+                                        </button>
+                                        <button class="btn btn-outline-info" onclick="sendMessage()">
+                                            <i class="fas fa-envelope"></i>
+                                        </button>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Outros Serviços -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-tools me-2"></i>Outros Serviços
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="service-item border-bottom pb-2 mb-2">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">Manutenção Elétrica</h6>
+                                            <small class="text-muted">Reparo de instalações</small>
+                                        </div>
+                                        <span class="text-success fw-bold">R$ 80,00</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-item border-bottom pb-2 mb-2">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">Quadro de Distribuição</h6>
+                                            <small class="text-muted">Instalação e upgrade</small>
+                                        </div>
+                                        <span class="text-success fw-bold">R$ 200,00</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">Iluminação LED</h6>
+                                            <small class="text-muted">Projeto e instalação</small>
+                                        </div>
+                                        <span class="text-success fw-bold">R$ 120,00</span>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-3">
+                                    <a href="/services?worker=<%= typeof service !== 'undefined' && service && service.workerId ? service.workerId._id : 'mock' %>" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        Ver Todos os Serviços
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Solicitar Serviço -->
+    <% if (user.userType === 'client') { %>
+        <div class="modal fade" id="requestServiceModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-paper-plane me-2"></i>Solicitar Serviço
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form id="requestServiceForm">
+                        <div class="modal-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Serviço:</strong> <span id="requestServiceTitle">Instalação Elétrica Residencial</span><br>
+                                <strong>Prestador:</strong> <span id="requestServiceWorker">João Silva</span><br>
+                                <strong>Preço:</strong> <span id="requestServicePrice">R$ 150,00</span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="requestDescription" class="form-label">Detalhes da Solicitação *</label>
+                                <textarea class="form-control" id="requestDescription" rows="4" required
+                                          placeholder="Descreva sua necessidade específica, localização, prazo desejado, etc..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="requestDate" class="form-label">Data Preferencial</label>
+                                <input type="datetime-local" class="form-control" id="requestDate">
+                            </div>
+
+                            <input type="hidden" id="requestServiceId">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Enviar Solicitação
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/service-details.js"></script>
+</body>
+</html>

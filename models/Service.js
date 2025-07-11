@@ -2,6 +2,7 @@ const { ObjectId } = require('mongodb');
 const { getDB } = require('../db/database');
 const Validator = require('../utils/validator');
 const Logger = require('../utils/logger');
+const { SERVICE_STATUS } = require('../utils/constants');
 
 class Service {
   constructor(serviceData) {
@@ -9,7 +10,7 @@ class Service {
     this.description = serviceData.description ? Validator.sanitizeString(serviceData.description) : '';
     this.category = Validator.sanitizeString(serviceData.category);
     this.price = typeof serviceData.price === 'number' ? serviceData.price : 0;
-    this.status = serviceData.status || 'disponível';
+    this.status = serviceData.status || SERVICE_STATUS.AVAILABLE;
 
     if (serviceData.workerId) {
       this.workerId = typeof serviceData.workerId === 'string' ? new ObjectId(serviceData.workerId) : serviceData.workerId;
@@ -93,7 +94,7 @@ class Service {
 
   static async findAvailable() {
     const collection = Service.getCollection();
-    const cursor = collection.find({ status: 'disponível' });
+    const cursor = collection.find({ status: SERVICE_STATUS.AVAILABLE });
     const services = await cursor.toArray();
     return services.map(serviceData => new Service(serviceData));
   }

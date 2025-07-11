@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { requireAuth, optionalAuth } = require('../middleware/auth');
+const requestService = require('../services/requestService');
+const serviceService = require('../services/serviceService');
+const { USER_TYPES } = require('../utils/constants');
 
 // Home - acesso livre
 router.get('/', optionalAuth, (req, res) => {
@@ -22,7 +25,6 @@ router.get('/dashboard', requireAuth, async (req, res) => {
         const userId = req.user._id;
         const userType = req.user.userType;
         
-        // Dados mockados para demonstração
         let stats = {
             active: 0,
             completed: 0,
@@ -32,54 +34,60 @@ router.get('/dashboard', requireAuth, async (req, res) => {
         
         let recentActivity = [];
         
-        if (userType === 'worker') {
-            // Mock de dados para trabalhadores
+        if (userType === USER_TYPES.WORKER) {
+            // Buscar serviços do trabalhador
+            const userServices = await serviceService.findByWorkerId(userId);
+            
+            // Buscar todas as solicitações para os serviços do trabalhador
+            let allRequests = [];
+            for (const service of userServices) {
+                const serviceRequests = await requestService.findByServiceId(service._id);
+                allRequests.push(...serviceRequests);
+            }
+            
+            // Calcular estatísticas
             stats = {
-                active: 3,
-                completed: 8,
-                rating: 4.7,
-                earnings: 1850
+                active: userServices.filter(s => s.status === 'disponível').length,
+                completed: allRequests.filter(r => r.status === 'concluida').length,
+                rating: 4.5, // Sistema de avaliações será implementado posteriormente
+                earnings: allRequests.filter(r => r.status === 'concluida')
+                    .reduce((total, r) => total + (r.serviceId.price || 0), 0)
             };
             
-            recentActivity = [
-                {
-                    title: 'Serviço: Instalação Elétrica',
-                    description: 'Status: disponível',
-                    time: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) // 2 dias atrás
-                },
-                {
-                    title: 'Serviço: Pintura Residencial',
-                    description: 'Status: disponível',
-                    time: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) // 5 dias atrás
-                },
-                {
-                    title: 'Serviço: Conserto de Encanamento',
-                    description: 'Status: pausado',
-                    time: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 1 semana atrás
-                }
-            ];
+            // Atividade recente - solicitações recentes
+            recentActivity = allRequests
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 5)
+                .map(request => ({
+                    title: `Solicitação: ${request.serviceId.title}`,
+                    description: `Cliente: ${request.clientId.name} - Status: ${request.status}`,
+                    time: request.createdAt,
+                    link: `/requests/${request._id}`
+                }));
             
         } else {
-            // Mock de dados para clientes
+            // Buscar solicitações do cliente
+            const userRequests = await requestService.findByClientId(userId);
+            
+            // Calcular estatísticas
             stats = {
-                active: 2,
-                completed: 5,
-                rating: 4.9,
-                earnings: 750 // Para clientes representa gastos
+                active: userRequests.filter(r => ['pendente', 'aceita', 'em_andamento'].includes(r.status)).length,
+                completed: userRequests.filter(r => r.status === 'concluida').length,
+                rating: 4.8, // Sistema de avaliações será implementado posteriormente
+                earnings: userRequests.filter(r => r.status === 'concluida')
+                    .reduce((total, r) => total + (r.serviceId.price || 0), 0)
             };
             
-            recentActivity = [
-                {
-                    title: 'Solicitação: Limpeza Residencial',
-                    description: 'Preciso de faxineira para limpeza completa da casa...',
-                    time: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) // 1 dia atrás
-                },
-                {
-                    title: 'Solicitação: Jardinagem',
-                    description: 'Manutenção do jardim com poda das plantas...',
-                    time: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 dias atrás
-                }
-            ];
+            // Atividade recente - solicitações recentes
+            recentActivity = userRequests
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 5)
+                .map(request => ({
+                    title: `Solicitação: ${request.serviceId.title}`,
+                    description: `Status: ${request.status} - ${request.description || 'Sem descrição'}`,
+                    time: request.createdAt,
+                    link: `/requests/${request._id}`
+                }));
         }
         
         res.render('dashboard', { 
@@ -87,17 +95,19 @@ router.get('/dashboard', requireAuth, async (req, res) => {
             user: req.user.toPublicObject(),
             stats: stats,
             recentActivity: recentActivity,
+            userType: userType,
             success: success ? decodeURIComponent(success) : null,
             error: error ? decodeURIComponent(error) : null
         });
         
     } catch (error) {
-        console.error('Erro ao carregar dashboard:', error);
+        Logger.error('Erro ao carregar dashboard:', error);
         res.render('dashboard', { 
             title: 'Dashboard',
             user: req.user.toPublicObject(),
             stats: { active: 0, completed: 0, rating: 0, earnings: 0 },
             recentActivity: [],
+            userType: req.user.userType,
             success: null,
             error: 'Erro ao carregar dados do dashboard'
         });

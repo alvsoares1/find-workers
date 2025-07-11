@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Logger = require('../utils/logger');
+const { USER_TYPES, isValidUserType } = require('../utils/constants');
 
 /**
  * Middleware para verificar se o usuário está autenticado
@@ -100,7 +101,19 @@ const requireUserType = (allowedTypes) => {
             return res.redirect('/login');
         }
 
-        if (!allowedTypes.includes(req.user.userType)) {
+        // Converter para array se for string única
+        const typesArray = Array.isArray(allowedTypes) ? allowedTypes : [allowedTypes];
+
+        // Validar se os tipos permitidos são válidos
+        if (!typesArray.every(type => isValidUserType(type))) {
+            Logger.error('Tipo de usuário inválido especificado no requireUserType:', typesArray);
+            return res.status(500).render('error', {
+                title: 'Erro interno',
+                message: 'Configuração de acesso inválida.'
+            });
+        }
+
+        if (!typesArray.includes(req.user.userType)) {
             Logger.warn(`Acesso negado - tipo de usuário: ${req.user.userType}, rota: ${req.originalUrl}`);
             return res.status(403).render('error', {
                 title: 'Acesso negado',
