@@ -1,0 +1,439 @@
+/* ==========================================================================
+   Find Workers - Services Styles
+   ========================================================================== */
+
+/* Service Cards */
+.service-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.service-card .card {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    height: 100%;
+}
+
+.service-card .card-header {
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 1rem 1.25rem;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.service-card .card-body {
+    padding: 1.25rem;
+}
+
+.service-card .card-footer {
+    background: transparent;
+    border-top: 1px solid var(--gray-200);
+    padding: 1rem 1.25rem;
+}
+
+/* Service Status Badges */
+.badge.bg-available {
+    background-color: var(--success-color) !important;
+}
+
+.badge.bg-unavailable {
+    background-color: var(--gray-500) !important;
+}
+
+/* Service Price Display */
+.service-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--success-color);
+}
+
+.service-price-small {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--success-color);
+}
+
+/* Service Categories */
+.category-badge {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    font-weight: 500;
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+}
+
+/* Tags */
+.service-tags .badge {
+    background-color: var(--gray-100);
+    color: var(--gray-700);
+    border: 1px solid var(--gray-300);
+    font-weight: 400;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.service-tags .badge:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Service Form */
+.service-form .form-control:focus,
+.service-form .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.service-form .form-control.is-valid {
+    border-color: var(--success-color);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2310b981' d='m2.3 6.73.81-.4.81.4-.94-2.43 1.82-1.79-.95-.13-.81-1.93-.81 1.93-.95.13 1.82 1.79zm2.7-6.73v2l3.17-3.17h-3.17z'/%3e%3c/svg%3e");
+}
+
+.service-form .form-control.is-invalid {
+    border-color: var(--danger-color);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23ef4444'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 1.4 1.4 1.4-1.4'/%3e%3c/svg%3e");
+}
+
+/* Filter Section */
+.filters-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: none;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.filters-card .card-body {
+    padding: 1.5rem;
+}
+
+.filter-input {
+    transition: var(--transition);
+}
+
+.filter-input:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+/* Service Details */
+.service-details-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 2rem;
+}
+
+.service-rating {
+    color: #ffc107;
+}
+
+.service-rating .fas {
+    margin-right: 2px;
+}
+
+/* Worker Profile Card */
+.worker-profile-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: none;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.worker-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0 auto;
+}
+
+.worker-stats {
+    text-align: center;
+}
+
+.worker-stats h6 {
+    margin-bottom: 0;
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+.worker-stats small {
+    color: var(--gray-500);
+    font-size: 0.75rem;
+}
+
+/* Service Action Buttons */
+.service-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.service-actions .btn {
+    flex: 1;
+    min-width: 120px;
+    font-weight: 500;
+}
+
+/* Reviews Section */
+.reviews-section {
+    margin-top: 2rem;
+}
+
+.review-item {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: var(--transition);
+}
+
+.review-item:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
+.review-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.review-rating {
+    color: #ffc107;
+    font-size: 0.9rem;
+}
+
+.review-date {
+    color: var(--gray-500);
+    font-size: 0.85rem;
+}
+
+/* Service Statistics */
+.service-stats {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--gray-200);
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    color: var(--gray-500);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Empty States */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--gray-500);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.empty-state h4 {
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+/* Loading States */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Service Form Specific */
+.service-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-section {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.form-section h5 {
+    color: var(--dark-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.advanced-settings {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+}
+
+.price-preview {
+    background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+    border: 1px solid var(--success-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-top: 0.5rem;
+}
+
+.tags-preview {
+    margin-top: 0.5rem;
+}
+
+.tags-preview .badge {
+    background-color: var(--primary-color);
+    color: white;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .service-card {
+        margin-bottom: 1rem;
+    }
+    
+    .service-actions {
+        flex-direction: column;
+    }
+    
+    .service-actions .btn {
+        min-width: auto;
+        margin-bottom: 0.5rem;
+    }
+    
+    .worker-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .service-details-header {
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .filters-card .row > div {
+        margin-bottom: 1rem;
+    }
+    
+    .form-section {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .service-price {
+        font-size: 1.25rem;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in-right {
+    animation: slideInRight 0.6s ease-out;
+}
+
+/* Service Category Colors */
+.category-construção { background-color: #8B4513 !important; }
+.category-elétrica { background-color: #FFD700 !important; color: #333 !important; }
+.category-hidráulica { background-color: #1E90FF !important; }
+.category-pintura { background-color: #FF6347 !important; }
+.category-jardinagem { background-color: #228B22 !important; }
+.category-limpeza { background-color: #40E0D0 !important; color: #333 !important; }
+.category-marcenaria { background-color: #D2691E !important; }
+.category-informática { background-color: #6A5ACD !important; }
+.category-mecânica { background-color: #2F4F4F !important; }
+.category-outros { background-color: var(--gray-500) !important; }

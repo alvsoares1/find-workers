@@ -39,13 +39,6 @@ const userService = {
             throw new Error(`Erro ao atualizar usuário: ${error.message}`);
         }
     },
-    async delete(id) {
-        try {
-            return await User.findByIdAndDelete(id);
-        } catch (error) {
-            throw new Error(`Erro ao deletar usuário: ${error.message}`);
-        }
-    },
     async emailExists(email) {
         try {
             const user = await User.findOne({ email: email.toLowerCase() });

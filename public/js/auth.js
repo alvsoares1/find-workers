@@ -1,6 +1,3 @@
-// Sistema simplificado sem autenticação
-console.log('Auth.js carregado - Sistema sem autenticação');
-
 document.addEventListener('DOMContentLoaded', function() {
     // Apenas animações e efeitos visuais
     animateFormFields();

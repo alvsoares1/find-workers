@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof service !== 'undefined' && service ? 'Editar' : 'Adicionar' %> Serviço - Find Workers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/common.css" rel="stylesheet">
+    <link href="/css/dashboard.css" rel="stylesheet">
+    <link href="/css/services.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <%- include('../partials/sidebar', { user: user, currentPage: 'services' }) %>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content p-4">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/services">Meus Serviços</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <%= typeof service !== 'undefined' && service ? 'Editar' : 'Adicionar' %> Serviço
+                        </li>
+                    </ol>
+                </nav>
+
+                <!-- Messages -->
+                <% if (typeof success !== 'undefined' && success) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <%= success %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <%= error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>
+                        <i class="fas fa-<%= typeof service !== 'undefined' && service ? 'edit' : 'plus' %> me-2"></i>
+                        <%= typeof service !== 'undefined' && service ? 'Editar' : 'Adicionar' %> Serviço
+                    </h2>
+                    <a href="/services" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Voltar
+                    </a>
+                </div>
+
+                <!-- Formulário -->
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>Informações do Serviço
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="serviceForm" novalidate>
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="mb-3">
+                                                <label for="serviceTitle" class="form-label">
+                                                    Título do Serviço <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       id="serviceTitle" 
+                                                       required 
+                                                       placeholder="Ex: Instalação de sistema elétrico"
+                                                       value="<%= typeof service !== 'undefined' && service ? service.title : '' %>">
+                                                <div class="invalid-feedback">
+                                                    Por favor, insira um título para o serviço.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="servicePrice" class="form-label">
+                                                    Preço (R$) <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="number" 
+                                                       class="form-control" 
+                                                       id="servicePrice" 
+                                                       min="0" 
+                                                       step="0.01" 
+                                                       required
+                                                       value="<%= typeof service !== 'undefined' && service ? service.price : '' %>">
+                                                <div class="invalid-feedback">
+                                                    Por favor, insira um preço válido.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="serviceCategory" class="form-label">
+                                                    Categoria <span class="text-danger">*</span>
+                                                </label>
+                                                <select class="form-select" id="serviceCategory" required>
+                                                    <option value="">Selecione uma categoria</option>
+                                                    <option value="Construção" <%= typeof service !== 'undefined' && service && service.category === 'Construção' ? 'selected' : '' %>>Construção</option>
+                                                    <option value="Elétrica" <%= typeof service !== 'undefined' && service && service.category === 'Elétrica' ? 'selected' : '' %>>Elétrica</option>
+                                                    <option value="Hidráulica" <%= typeof service !== 'undefined' && service && service.category === 'Hidráulica' ? 'selected' : '' %>>Hidráulica</option>
+                                                    <option value="Pintura" <%= typeof service !== 'undefined' && service && service.category === 'Pintura' ? 'selected' : '' %>>Pintura</option>
+                                                    <option value="Jardinagem" <%= typeof service !== 'undefined' && service && service.category === 'Jardinagem' ? 'selected' : '' %>>Jardinagem</option>
+                                                    <option value="Limpeza" <%= typeof service !== 'undefined' && service && service.category === 'Limpeza' ? 'selected' : '' %>>Limpeza</option>
+                                                    <option value="Marcenaria" <%= typeof service !== 'undefined' && service && service.category === 'Marcenaria' ? 'selected' : '' %>>Marcenaria</option>
+                                                    <option value="Informática" <%= typeof service !== 'undefined' && service && service.category === 'Informática' ? 'selected' : '' %>>Informática</option>
+                                                    <option value="Mecânica" <%= typeof service !== 'undefined' && service && service.category === 'Mecânica' ? 'selected' : '' %>>Mecânica</option>
+                                                    <option value="Outros" <%= typeof service !== 'undefined' && service && service.category === 'Outros' ? 'selected' : '' %>>Outros</option>
+                                                </select>
+                                                <div class="invalid-feedback">
+                                                    Por favor, selecione uma categoria.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="serviceDuration" class="form-label">Duração Estimada</label>
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       id="serviceDuration" 
+                                                       placeholder="Ex: 2 horas, 1 dia, A combinar"
+                                                       value="<%= typeof service !== 'undefined' && service ? service.duration || '' : '' %>">
+                                                <small class="form-text text-muted">Deixe em branco se preferir "A combinar"</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="serviceDescription" class="form-label">
+                                            Descrição <span class="text-danger">*</span>
+                                        </label>
+                                        <textarea class="form-control" 
+                                                  id="serviceDescription" 
+                                                  rows="5" 
+                                                  required
+                                                  placeholder="Descreva detalhadamente o serviço que você oferece, materiais incluídos, processo de trabalho, etc..."><%= typeof service !== 'undefined' && service ? service.description : '' %></textarea>
+                                        <div class="invalid-feedback">
+                                            Por favor, forneça uma descrição detalhada do serviço.
+                                        </div>
+                                        <div class="form-text">
+                                            Uma boa descrição ajuda os clientes a entenderem melhor o que você oferece.
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="serviceTags" class="form-label">Tags</label>
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       id="serviceTags" 
+                                                       placeholder="Ex: residencial, comercial, urgente"
+                                                       value="<%= typeof service !== 'undefined' && service && service.tags ? service.tags.join(', ') : '' %>">
+                                                <small class="form-text text-muted">
+                                                    Separe as tags por vírgula. Tags ajudam os clientes a encontrar seu serviço.
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Status do Serviço</label>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" 
+                                                           type="checkbox" 
+                                                           id="serviceAvailable" 
+                                                           <%= typeof service === 'undefined' || !service || service.status === 'disponível' ? 'checked' : '' %>>
+                                                    <label class="form-check-label" for="serviceAvailable">
+                                                        Serviço disponível para contratação
+                                                    </label>
+                                                </div>
+                                                <small class="form-text text-muted">
+                                                    Desmarque se não quiser receber novas solicitações temporariamente.
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Seção Avançada -->
+                                    <div class="card bg-light mb-3">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-cogs me-2"></i>Configurações Avançadas
+                                                <button type="button" class="btn btn-sm btn-outline-primary float-end" data-bs-toggle="collapse" data-bs-target="#advancedSettings">
+                                                    <i class="fas fa-chevron-down"></i>
+                                                </button>
+                                            </h6>
+                                        </div>
+                                        <div class="collapse" id="advancedSettings">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="serviceArea" class="form-label">Área de Atendimento</label>
+                                                            <input type="text" 
+                                                                   class="form-control" 
+                                                                   id="serviceArea" 
+                                                                   placeholder="Ex: Região metropolitana, Todo o estado"
+                                                                   value="<%= typeof service !== 'undefined' && service ? service.serviceArea || '' : '' %>">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="urgencyMultiplier" class="form-label">Taxa de Urgência (%)</label>
+                                                            <input type="number" 
+                                                                   class="form-control" 
+                                                                   id="urgencyMultiplier" 
+                                                                   min="0" 
+                                                                   max="100" 
+                                                                   placeholder="Ex: 50"
+                                                                   value="<%= typeof service !== 'undefined' && service ? service.urgencyMultiplier || '' : '' %>">
+                                                            <small class="form-text text-muted">
+                                                                Acréscimo para serviços urgentes
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Aceita Negociação</label>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" 
+                                                                       type="checkbox" 
+                                                                       id="acceptsNegotiation"
+                                                                       <%= typeof service !== 'undefined' && service && service.acceptsNegotiation ? 'checked' : '' %>>
+                                                                <label class="form-check-label" for="acceptsNegotiation">
+                                                                    Preço negociável
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Permite Agendamento</label>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" 
+                                                                       type="checkbox" 
+                                                                       id="allowsScheduling"
+                                                                       <%= typeof service === 'undefined' || !service || service.allowsScheduling !== false ? 'checked' : '' %>>
+                                                                <label class="form-check-label" for="allowsScheduling">
+                                                                    Cliente pode escolher data/hora
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex gap-3">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fas fa-save me-2"></i>
+                                            <%= typeof service !== 'undefined' && service ? 'Atualizar' : 'Salvar' %> Serviço
+                                        </button>
+                                        <a href="/services" class="btn btn-outline-secondary btn-lg">
+                                            <i class="fas fa-times me-2"></i>Cancelar
+                                        </a>
+                                        <% if (typeof service !== 'undefined' && service) { %>
+                                            <button type="button" class="btn btn-outline-danger btn-lg ms-auto" onclick="deleteService()">
+                                                <i class="fas fa-trash me-2"></i>Excluir Serviço
+                                            </button>
+                                        <% } %>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/service-form.js"></script>
+</body>
+</html>

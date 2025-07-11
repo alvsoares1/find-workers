@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Find Workers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/common.css" rel="stylesheet">
+    <link href="/css/dashboard.css" rel="stylesheet">
+    <link href="/css/request.css" rel="stylesheet">
+    <link href="/css/services.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <%- include('../partials/sidebar', { user: user, currentPage: 'services' }) %>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content p-4">
+                <!-- Messages -->
+                <% if (typeof success !== 'undefined' && success) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <%= success %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <%= error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><%= title %></h2>
+                    <% if (user.userType === 'worker') { %>
+                        <a href="/services/new" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Adicionar Serviço
+                        </a>
+                    <% } %>
+                </div>
+
+                <!-- Filtros -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title mb-3">
+                            <i class="fas fa-filter me-2"></i>Filtros
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <select class="form-select" id="categoryFilter">
+                                    <option value="">Todas as categorias</option>
+                                    <% if (categories && categories.length > 0) { %>
+                                        <% categories.forEach(function(category) { %>
+                                            <option value="<%= category %>" <%= filters && filters.category === category ? 'selected' : '' %>>
+                                                <%= category %>
+                                            </option>
+                                        <% }) %>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="priceFilter">
+                                    <option value="">Qualquer preço</option>
+                                    <option value="0-50">Até R$ 50</option>
+                                    <option value="50-100">R$ 50 - R$ 100</option>
+                                    <option value="100-200">R$ 100 - R$ 200</option>
+                                    <option value="200+">Acima de R$ 200</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="searchFilter" placeholder="Buscar serviços..." value="<%= filters && filters.search || '' %>">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                    <i class="fas fa-times me-1"></i>Limpar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Serviços -->
+                <div class="row" id="servicesList">
+                    <% if (services && services.length > 0) { %>
+                        <% services.forEach(function(service) { %>
+                            <div class="col-md-6 col-lg-4 mb-4 service-card" 
+                                 data-category="<%= service.category %>" 
+                                 data-price="<%= service.price %>"
+                                 data-search="<%= service.title.toLowerCase() %> <%= service.description.toLowerCase() %>"
+                                 data-available="<%= service.status === 'disponível' %>">
+                                <div class="card h-100 <%= service.status !== 'disponível' ? 'opacity-75' : '' %>">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0"><%= service.title %></h6>
+                                        <div class="d-flex gap-2">
+                                            <span class="badge bg-primary"><%= service.category %></span>
+                                            <% if (service.status !== 'disponível') { %>
+                                                <span class="badge bg-secondary">Indisponível</span>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text text-muted mb-3"><%= service.description %></p>
+                                        
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="text-muted">Preço:</span>
+                                                <span class="fw-bold text-success fs-5">R$ <%= service.price.toFixed(2) %></span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="text-muted">Duração:</span>
+                                                <span><%= service.duration || 'A combinar' %></span>
+                                            </div>
+                                            <% if (user.userType === 'client') { %>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="text-muted">Prestador:</span>
+                                                    <span><%= service.workerId.name %></span>
+                                                </div>
+                                            <% } %>
+                                        </div>
+
+                                        <% if (service.tags && service.tags.length > 0) { %>
+                                            <div class="mb-3">
+                                                <% service.tags.forEach(function(tag) { %>
+                                                    <span class="badge bg-light text-dark me-1">#<%= tag %></span>
+                                                <% }) %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                    <div class="card-footer bg-transparent">
+                                        <% if (user.userType === 'client') { %>
+                                            <% if (service.status === 'disponível') { %>
+                                                <button class="btn btn-primary w-100" onclick="requestService('<%= service._id %>')">
+                                                    <i class="fas fa-paper-plane me-2"></i>Solicitar Serviço
+                                                </button>
+                                            <% } else { %>
+                                                <button class="btn btn-secondary w-100" disabled>
+                                                    <i class="fas fa-ban me-2"></i>Indisponível
+                                                </button>
+                                            <% } %>
+                                        <% } else { %>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-outline-primary flex-fill" onclick="editService('<%= service._id %>')">
+                                                    <i class="fas fa-edit me-1"></i>Editar
+                                                </button>
+                                                <% if (service.status === 'disponível') { %>
+                                                    <button class="btn btn-outline-warning flex-fill" 
+                                                            onclick="toggleServiceAvailability('<%= service._id %>', false)">
+                                                        <i class="fas fa-pause me-1"></i>Pausar
+                                                    </button>
+                                                <% } else { %>
+                                                    <button class="btn btn-outline-success flex-fill" 
+                                                            onclick="toggleServiceAvailability('<%= service._id %>', true)">
+                                                        <i class="fas fa-play me-1"></i>Ativar
+                                                    </button>
+                                                <% } %>
+                                                <button class="btn btn-outline-danger" onclick="deleteService('<%= service._id %>')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="col-12">
+                            <div class="text-center py-5">
+                                <i class="fas fa-tools fa-3x text-muted mb-3"></i>
+                                <h4 class="text-muted">
+                                    <% if (user.userType === 'client') { %>
+                                        Nenhum serviço encontrado
+                                    <% } else { %>
+                                        Você ainda não tem serviços cadastrados
+                                    <% } %>
+                                </h4>
+                                <p class="text-muted mb-4">
+                                    <% if (user.userType === 'client') { %>
+                                        Tente ajustar os filtros ou aguarde novos serviços serem cadastrados.
+                                    <% } else { %>
+                                        Comece cadastrando seu primeiro serviço para atrair clientes.
+                                    <% } %>
+                                </p>
+                                <% if (user.userType === 'worker') { %>
+                                    <a href="/services/new" class="btn btn-primary">
+                                        <i class="fas fa-plus me-2"></i>Cadastrar Primeiro Serviço
+                                    </a>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Solicitar Serviço -->
+    <% if (user.userType === 'client') { %>
+        <div class="modal fade" id="requestServiceModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-paper-plane me-2"></i>Solicitar Serviço
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form id="requestServiceForm">
+                        <div class="modal-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Serviço:</strong> <span id="requestServiceTitle"></span><br>
+                                <strong>Prestador:</strong> <span id="requestServiceWorker"></span><br>
+                                <strong>Preço:</strong> <span id="requestServicePrice"></span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="requestDescription" class="form-label">Detalhes da Solicitação *</label>
+                                <textarea class="form-control" id="requestDescription" rows="4" required
+                                          placeholder="Descreva sua necessidade específica, localização, prazo desejado, etc..."></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="requestDate" class="form-label">Data Preferencial</label>
+                                <input type="datetime-local" class="form-control" id="requestDate">
+                            </div>
+
+                            <input type="hidden" id="requestServiceId">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Enviar Solicitação
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/services.js"></script>
+</body>
+</html>

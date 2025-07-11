@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,240 +10,167 @@
     <link href="/css/common.css" rel="stylesheet">
     <link href="/css/dashboard.css" rel="stylesheet">
 </head>
+
 <body>
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar p-3">
-                <div class="d-flex align-items-center mb-4">
-                    <i class="fas fa-hard-hat me-2"></i>
-                    <h5 class="mb-0">Find Workers</h5>
-                </div>
-                
-                <div class="user-info mb-4 text-center">
-                    <div class="user-avatar mx-auto mb-3">
-                        <%= user.name.charAt(0).toUpperCase() %>
-                    </div>
-                    <h6><%= user.name %></h6>
-                    <p class="small mb-0 opacity-75">
-                        <% if (user.userType === 'client') { %>
-                            <i class="fas fa-user-tie me-1"></i>Cliente
-                        <% } else { %>
-                            <i class="fas fa-hard-hat me-1"></i>Trabalhador
+            <%- include('partials/sidebar', { user: user, currentPage: 'dashboard' }) %>
+
+                <!-- Main Content -->
+                <div class="col-md-9 col-lg-10 main-content p-4">
+                    <!-- Messages -->
+                    <% if (typeof success !=='undefined' && success) { %>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <%= success %>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
                         <% } %>
-                    </p>
-                </div>
 
-                <nav class="nav flex-column">
-                    <a class="nav-link active" href="/dashboard">
-                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                    </a>
-                    <% if (user.userType === 'client') { %>
-                        <a class="nav-link" href="/services">
-                            <i class="fas fa-search me-2"></i>Buscar Serviços
-                        </a>
-                        <a class="nav-link" href="/my-requests">
-                            <i class="fas fa-clipboard-list me-2"></i>Minhas Solicitações
-                        </a>
-                    <% } else { %>
-                        <a class="nav-link" href="/my-services">
-                            <i class="fas fa-tools me-2"></i>Meus Serviços
-                        </a>
-                        <a class="nav-link" href="/available-jobs">
-                            <i class="fas fa-briefcase me-2"></i>Trabalhos Disponíveis
-                        </a>
-                    <% } %>
-                    <a class="nav-link" href="/messages">
-                        <i class="fas fa-envelope me-2"></i>Mensagens
-                        <span class="badge bg-danger rounded-pill ms-auto">3</span>
-                    </a>
-                    <a class="nav-link" href="/profile">
-                        <i class="fas fa-user-edit me-2"></i>Perfil
-                    </a>
-                    <a class="nav-link" href="/settings">
-                        <i class="fas fa-cog me-2"></i>Configurações
-                    </a>
-                    <hr class="my-3">
-                    <a class="nav-link" href="/logout">
-                        <i class="fas fa-sign-out-alt me-2"></i>Sair
-                    </a>
-                </nav>
-            </div>
-
-            <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 main-content p-4">
-                <!-- Messages -->
-                <% if (typeof success !== 'undefined' && success) { %>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <%= success %>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                <% } %>
-
-                <% if (typeof error !== 'undefined' && error) { %>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        <%= error %>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                <% } %>
-
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2>Dashboard</h2>
-                    <button class="btn btn-primary">
-                        <% if (user.userType === 'client') { %>
-                            <i class="fas fa-plus me-2"></i>Nova Solicitação
-                        <% } else { %>
-                            <i class="fas fa-plus me-2"></i>Adicionar Serviço
-                        <% } %>
-                    </button>
-                </div>
-
-                <!-- Stats Cards -->
-                <div class="row mb-4">
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card stats-card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-shrink-0">
-                                        <i class="fas fa-clipboard-list text-primary" style="font-size: 2rem;"></i>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <div class="small text-muted">
-                                            <% if (user.userType === 'client') { %>
-                                                Solicitações Ativas
-                                            <% } else { %>
-                                                Serviços Ativos
-                                            <% } %>
-                                        </div>
-                                        <div class="h5 mb-0"><%= stats.active %></div>
-                                    </div>
+                            <% if (typeof error !=='undefined' && error) { %>
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    <%= error %>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card stats-card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-shrink-0">
-                                        <i class="fas fa-check-circle text-success" style="font-size: 2rem;"></i>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <div class="small text-muted">Concluídos</div>
-                                        <div class="h5 mb-0"><%= stats.completed %></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card stats-card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-shrink-0">
-                                        <i class="fas fa-star text-warning" style="font-size: 2rem;"></i>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <div class="small text-muted">Avaliação</div>
-                                        <div class="h5 mb-0"><%= stats.rating %></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card stats-card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-shrink-0">
-                                        <i class="fas fa-dollar-sign text-info" style="font-size: 2rem;"></i>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <div class="small text-muted">Este Mês</div>
-                                        <div class="h5 mb-0">R$ <%= stats.earnings %></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                <% } %>
 
-                <!-- Recent Activity -->
-                <div class="row">
-                    <div class="col-lg-8 mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-clock me-2"></i>Atividade Recente
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <% if (recentActivity && recentActivity.length > 0) { %>
-                                    <% recentActivity.forEach(function(activity) { %>
-                                        <div class="activity-item">
-                                            <div class="d-flex justify-content-between">
-                                                <div>
-                                                    <h6 class="mb-1"><%= activity.title %></h6>
-                                                    <p class="text-muted small mb-0"><%= activity.description %></p>
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <h2>Dashboard</h2>
+                                    </div>
+
+                                    <!-- Stats Cards -->
+                                    <div class="row mb-4">
+                                        <div class="col-xl-3 col-md-6 mb-4">
+                                            <div class="card stats-card">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-shrink-0">
+                                                            <i class="fas fa-clipboard-list text-primary"
+                                                                style="font-size: 2rem;"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1 ms-3">
+                                                            <div class="small text-muted">
+                                                                <% if (user.userType==='client' ) { %>
+                                                                    Solicitações Ativas
+                                                                    <% } else { %>
+                                                                        Serviços Ativos
+                                                                        <% } %>
+                                                            </div>
+                                                            <div class="h5 mb-0">
+                                                                <%= stats.active %>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <small class="text-muted">
-                                                    <%= new Date(activity.time).toLocaleDateString('pt-BR') %>
-                                                </small>
                                             </div>
                                         </div>
-                                    <% }); %>
-                                <% } else { %>
-                                    <div class="text-center text-muted py-4">
-                                        <i class="fas fa-inbox fa-2x mb-3"></i>
-                                        <p>Nenhuma atividade recente</p>
+                                        <div class="col-xl-3 col-md-6 mb-4">
+                                            <div class="card stats-card">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-shrink-0">
+                                                            <i class="fas fa-check-circle text-success"
+                                                                style="font-size: 2rem;"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1 ms-3">
+                                                            <div class="small text-muted">Concluídos</div>
+                                                            <div class="h5 mb-0">
+                                                                <%= stats.completed %>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-3 col-md-6 mb-4">
+                                            <div class="card stats-card">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-shrink-0">
+                                                            <i class="fas fa-star text-warning"
+                                                                style="font-size: 2rem;"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1 ms-3">
+                                                            <div class="small text-muted">Avaliação</div>
+                                                            <div class="h5 mb-0">
+                                                                <%= stats.rating %>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-3 col-md-6 mb-4">
+                                            <div class="card stats-card">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="flex-shrink-0">
+                                                            <i class="fas fa-dollar-sign text-info"
+                                                                style="font-size: 2rem;"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1 ms-3">
+                                                            <div class="small text-muted">
+                                                                <% if (user.userType==='client' ) { %>
+                                                                    Gastos Este Mês
+                                                                    <% } else { %>
+                                                                        Ganhos Este Mês
+                                                                        <% } %>
+                                                            </div>
+                                                            <div class="h5 mb-0">R$ <%= stats.earnings %>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                <% } %>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Quick Actions -->
-                    <div class="col-lg-4 mb-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-bolt me-2"></i>Ações Rápidas
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="d-grid gap-2">
-                                    <% if (user.userType === 'client') { %>
-                                        <button class="btn btn-primary">
-                                            <i class="fas fa-plus me-2"></i>Nova Solicitação
-                                        </button>
-                                        <button class="btn btn-outline-primary">
-                                            <i class="fas fa-search me-2"></i>Buscar Profissionais
-                                        </button>
-                                    <% } else { %>
-                                        <button class="btn btn-primary">
-                                            <i class="fas fa-tools me-2"></i>Adicionar Serviço
-                                        </button>
-                                        <button class="btn btn-outline-primary">
-                                            <i class="fas fa-briefcase me-2"></i>Ver Trabalhos
-                                        </button>
-                                    <% } %>
-                                    <button class="btn btn-outline-secondary">
-                                        <i class="fas fa-envelope me-2"></i>Mensagens
-                                    </button>
-                                    <button class="btn btn-outline-secondary">
-                                        <i class="fas fa-user-edit me-2"></i>Editar Perfil
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                    <!-- Recent Activity -->
+                                    <div class="row">
+                                        <div class="col-lg-12 mb-4">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h5 class="mb-0">
+                                                        <i class="fas fa-clock me-2"></i>Atividade Recente
+                                                    </h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <% if (recentActivity && recentActivity.length> 0) { %>
+                                                        <% recentActivity.forEach(function(activity) { %>
+                                                            <div class="activity-item">
+                                                                <div class="d-flex justify-content-between">
+                                                                    <div>
+                                                                        <h6 class="mb-1">
+                                                                            <%= activity.title %>
+                                                                        </h6>
+                                                                        <p class="text-muted small mb-0">
+                                                                            <%= activity.description %>
+                                                                        </p>
+                                                                    </div>
+                                                                    <small class="text-muted">
+                                                                        <%= new
+                                                                            Date(activity.time).toLocaleDateString('pt-BR')
+                                                                            %>
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                            <% }); %>
+                                                                <% } else { %>
+                                                                    <div class="text-center text-muted py-4">
+                                                                        <i class="fas fa-inbox fa-2x mb-3"></i>
+                                                                        <p>Nenhuma atividade recente</p>
+                                                                    </div>
+                                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                 </div>
-            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
