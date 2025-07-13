@@ -14,10 +14,13 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <%- include('partials/sidebar', { user: user, currentPage: 'dashboard' }) %>
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar p-3">
+                <%- include('partials/sidebar', { user: user, currentPage: 'dashboard' }) %>
+            </div>
 
-                <!-- Main Content -->
-                <div class="col-md-9 col-lg-10 main-content p-4">
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content p-4">
                     <!-- Messages -->
                     <% if (typeof success !=='undefined' && success) { %>
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -162,11 +165,12 @@
                                                                         <p>Nenhuma atividade recente</p>
                                                                     </div>
                                                                     <% } %>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                                </div>                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
         </div>
     </div>
 

@@ -9,6 +9,11 @@
     color: white;
 }
 
+.main-content {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
 .sidebar .nav-link {
     color: rgba(255, 255, 255, 0.8);
     border-radius: 10px;

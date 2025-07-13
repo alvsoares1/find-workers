@@ -4,7 +4,8 @@ const requestService = require('../services/requestService');
 const serviceService = require('../services/serviceService');
 const { requireAuth, requireUserType } = require('../middleware/auth');
 const Logger = require('../utils/logger');
-const { USER_TYPES } = require('../utils/constants');
+const { USER_TYPES, REQUEST_STATUS } = require('../utils/constants');
+const Request = require('../models/Request');
 
 // Middleware para verificar se usuário está logado
 router.use(requireAuth);
@@ -66,10 +67,20 @@ router.get('/:id', async (req, res) => {
             });
         }
 
+        // Buscar informações financeiras se existirem
+        let financialInfo = null;
+        try {
+            const transactionService = require('../services/transactionService');
+            financialInfo = await transactionService.getRequestFinancialStatus(request._id);
+        } catch (financialError) {
+            Logger.warn('Erro ao buscar informações financeiras:', financialError);
+        }
+
         res.render('requests/details', {
             title: 'Detalhes da Solicitação',
             user,
             request,
+            financialInfo,
             userType: user.userType
         });
     } catch (error) {
@@ -154,6 +165,27 @@ router.put('/:id/accept', requireUserType(USER_TYPES.WORKER), async (req, res) =
         const workerId = req.user._id;
 
         const updatedRequest = await requestService.acceptRequest(requestId, workerId);
+
+        // Processar pagamento automaticamente
+        try {
+            const transactionService = require('../services/transactionService');
+            const service = await serviceService.findById(updatedRequest.serviceId);
+            
+            if (service && service.price > 0) {
+                await transactionService.processPayment(
+                    updatedRequest.clientId,
+                    updatedRequest.serviceId,
+                    updatedRequest._id,
+                    service.price,
+                    `Pagamento automático - ${service.title}`
+                );
+                
+                Logger.info(`Pagamento processado automaticamente para solicitação ${requestId}`);
+            }
+        } catch (paymentError) {
+            Logger.warn(`Erro ao processar pagamento automático para solicitação ${requestId}:`, paymentError);
+            // Continua mesmo se o pagamento falhar
+        }
 
         Logger.info(`Solicitação ${requestId} aceita por trabalhador ${workerId}`);
 
@@ -249,7 +281,7 @@ router.put('/:id/status', async (req, res) => {
         const user = req.user;
 
         // Validar status
-        const validStatuses = ['pendente', 'aceita', 'rejeitada', 'em_andamento', 'concluida', 'cancelada'];
+        const validStatuses = Object.values(REQUEST_STATUS);
         if (!validStatuses.includes(status)) {
             return res.status(400).json({
                 success: false,

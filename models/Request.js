@@ -10,6 +10,12 @@ class Request {
         this.status = requestData.status || 'pendente';
         this.description = requestData.description ? Validator.sanitizeString(requestData.description) : '';
         this.preferredDate = requestData.preferredDate ? new Date(requestData.preferredDate) : null;
+        
+        // Campos financeiros - preenchidos quando aceita
+        this.agreedPrice = requestData.agreedPrice || null;
+        this.paymentStatus = requestData.paymentStatus || 'pending'; // pending, completed, failed
+        this.transactionIds = requestData.transactionIds || []; // Array de IDs das transações relacionadas
+        
         this.createdAt = requestData.createdAt || new Date();
         this.updatedAt = requestData.updatedAt || new Date();
         
@@ -185,6 +191,9 @@ class Request {
             status: this.status,
             description: this.description,
             preferredDate: this.preferredDate,
+            agreedPrice: this.agreedPrice,
+            paymentStatus: this.paymentStatus,
+            transactionIds: this.transactionIds,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt
         };

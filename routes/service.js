@@ -14,10 +14,8 @@ router.get('/', requireAuth, async (req, res) => {
     let services = [];
     
     if (user.userType === USER_TYPES.WORKER) {
-      // Trabalhador vê seus próprios serviços
       services = await serviceService.findByWorkerId(user._id);
     } else {
-      // Cliente vê todos os serviços disponíveis
       services = await serviceService.findAvailable();
       
       // Aplicar filtros se fornecidos

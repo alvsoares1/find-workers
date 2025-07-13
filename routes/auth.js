@@ -116,16 +116,119 @@ router.get('/logout', requireAuth, async (req, res) => {
     }
 });
 
-router.get('/profile', requireAuth, (req, res) => {
-    const success = req.query.success;
-    const error = req.query.error;
-    
-    res.render('profile', {
-        title: 'Meu Perfil - Find Workers',
-        user: req.user.toPublicObject(),
-        success: success ? decodeURIComponent(success) : null,
-        error: error ? decodeURIComponent(error) : null
-    });
+router.get('/profile', requireAuth, async (req, res) => {
+    try {
+        const success = req.query.success;
+        const error = req.query.error;
+        
+        // Buscar dados financeiros específicos por tipo de usuário
+        let financialStats = null;
+        try {
+            const transactionService = require('../services/transactionService');
+            const { TRANSACTION_TYPES, TRANSACTION_STATUS } = require('../utils/constants');
+            const userType = req.user.userType;
+            
+            if (userType === 'client') {
+                // Estatísticas para cliente (apenas pagamentos)
+                const allTransactions = await transactionService.getUserTransactions(req.user._id, {
+                    type: TRANSACTION_TYPES.PAYMENT,
+                    status: TRANSACTION_STATUS.COMPLETED
+                });
+                
+                const totalPaid = allTransactions.reduce((sum, t) => sum + t.amount, 0);
+                const currentMonth = new Date().getMonth() + 1;
+                const currentYear = new Date().getFullYear();
+                
+                const monthlyTransactions = allTransactions.filter(t => {
+                    const date = new Date(t.transactionDate);
+                    return date.getMonth() + 1 === currentMonth && date.getFullYear() === currentYear;
+                });
+                
+                const monthlyTotal = monthlyTransactions.reduce((sum, t) => sum + t.amount, 0);
+                
+                // Buscar transações detalhadas
+                const detailedTransactions = await transactionService.getUserTransactionsWithDetails(req.user._id, {
+                    type: TRANSACTION_TYPES.PAYMENT,
+                    status: TRANSACTION_STATUS.COMPLETED,
+                    limit: 10
+                });
+                
+                // Calcular valores adicionais
+                const avgTransaction = allTransactions.length > 0 ? totalPaid / allTransactions.length : 0;
+                
+                financialStats = {
+                    totalPaid,
+                    monthlyTotal,
+                    avgTransaction,
+                    transactionCount: allTransactions.length,
+                    monthlyCount: monthlyTransactions.length,
+                    recentTransactions: detailedTransactions
+                };
+                
+            } else if (userType === 'worker') {
+                // Estatísticas para worker (apenas recebimentos)
+                const allTransactions = await transactionService.getUserTransactions(req.user._id, {
+                    type: TRANSACTION_TYPES.RECEIPT,
+                    status: TRANSACTION_STATUS.COMPLETED
+                });
+                
+                const totalReceived = allTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
+                const totalFees = allTransactions.reduce((sum, t) => sum + (t.platformFee || 0), 0);
+                const currentMonth = new Date().getMonth() + 1;
+                const currentYear = new Date().getFullYear();
+                
+                const monthlyTransactions = allTransactions.filter(t => {
+                    const date = new Date(t.transactionDate);
+                    return date.getMonth() + 1 === currentMonth && date.getFullYear() === currentYear;
+                });
+                
+                const monthlyTotal = monthlyTransactions.reduce((sum, t) => sum + (t.netAmount || 0), 0);
+                const monthlyFees = monthlyTransactions.reduce((sum, t) => sum + (t.platformFee || 0), 0);
+                
+                // Buscar transações detalhadas
+                const detailedTransactions = await transactionService.getUserTransactionsWithDetails(req.user._id, {
+                    type: TRANSACTION_TYPES.RECEIPT,
+                    status: TRANSACTION_STATUS.COMPLETED,
+                    limit: 10
+                });
+                
+                // Calcular valores adicionais
+                const netTotal = totalReceived - totalFees;
+                const avgTransaction = allTransactions.length > 0 ? totalReceived / allTransactions.length : 0;
+                
+                financialStats = {
+                    totalReceived,
+                    totalFees,
+                    netTotal,
+                    monthlyTotal,
+                    monthlyFees,
+                    avgTransaction,
+                    transactionCount: allTransactions.length,
+                    monthlyCount: monthlyTransactions.length,
+                    recentTransactions: detailedTransactions
+                };
+            }
+        } catch (financialError) {
+            Logger.warn('Erro ao buscar dados financeiros (será ignorado):', financialError.message);
+        }
+        
+        res.render('profile', {
+            title: 'Meu Perfil - Find Workers',
+            user: req.user.toPublicObject(),
+            financialStats,
+            success: success ? decodeURIComponent(success) : null,
+            error: error ? decodeURIComponent(error) : null
+        });
+    } catch (error) {
+        Logger.error('Erro ao carregar perfil:', error);
+        res.render('profile', {
+            title: 'Meu Perfil - Find Workers',
+            user: req.user.toPublicObject(),
+            financialStats: null,
+            success: null,
+            error: 'Erro ao carregar alguns dados do perfil'
+        });
+    }
 });
 
 router.post('/profile', requireAuth, async (req, res) => {
