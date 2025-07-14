@@ -3,7 +3,8 @@ const router = express.Router();
 const { requireAuth, optionalAuth } = require('../middleware/auth');
 const requestService = require('../services/requestService');
 const serviceService = require('../services/serviceService');
-const { USER_TYPES } = require('../utils/constants');
+const { USER_TYPES, SERVICE_STATUS, REQUEST_STATUS } = require('../utils/constants');
+const Logger = require('../utils/logger');
 
 // Home - acesso livre
 router.get('/', optionalAuth, (req, res) => {
@@ -47,10 +48,10 @@ router.get('/dashboard', requireAuth, async (req, res) => {
             
             // Calcular estatísticas
             stats = {
-                active: userServices.filter(s => s.status === 'disponível').length,
-                completed: allRequests.filter(r => r.status === 'concluida').length,
+                active: userServices.filter(s => s.status === SERVICE_STATUS.AVAILABLE).length,
+                completed: allRequests.filter(r => r.status === REQUEST_STATUS.COMPLETED).length,
                 rating: 4.5, // Sistema de avaliações será implementado posteriormente
-                earnings: allRequests.filter(r => r.status === 'concluida')
+                earnings: allRequests.filter(r => r.status === REQUEST_STATUS.COMPLETED)
                     .reduce((total, r) => total + (r.serviceId.price || 0), 0)
             };
             
@@ -71,10 +72,10 @@ router.get('/dashboard', requireAuth, async (req, res) => {
             
             // Calcular estatísticas
             stats = {
-                active: userRequests.filter(r => ['pendente', 'aceita', 'em_andamento'].includes(r.status)).length,
-                completed: userRequests.filter(r => r.status === 'concluida').length,
+                active: userRequests.filter(r => [REQUEST_STATUS.PENDING, REQUEST_STATUS.ACCEPTED, REQUEST_STATUS.IN_PROGRESS].includes(r.status)).length,
+                completed: userRequests.filter(r => r.status === REQUEST_STATUS.COMPLETED).length,
                 rating: 4.8, // Sistema de avaliações será implementado posteriormente
-                earnings: userRequests.filter(r => r.status === 'concluida')
+                earnings: userRequests.filter(r => r.status === REQUEST_STATUS.COMPLETED)
                     .reduce((total, r) => total + (r.serviceId.price || 0), 0)
             };
             

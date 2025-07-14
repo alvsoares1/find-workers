@@ -212,10 +212,342 @@
                 </div>
             </div>
         </div>
+
+        <!-- Financial Summary Card - Full Width -->
+        <% if (financialStats) { %>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-line me-2"></i>Resumo Financeiro Detalhado
+                        </h5>
+                        <div class="btn-group" role="group" aria-label="Exportar relatório">
+                            <button type="button" class="btn btn-outline-success btn-sm" onclick="exportReport('pdf')">
+                                <i class="fas fa-file-pdf me-1"></i>PDF
+                            </button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="exportReport('csv')">
+                                <i class="fas fa-file-csv me-1"></i>CSV
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <% if (user.userType === 'client') { %>
+                            <!-- Resumo para Cliente (apenas pagamentos) -->
+                            <div class="row text-center mb-4">
+                                <div class="col-md-3">
+                                    <div class="p-4 border rounded bg-light">
+                                        <h3 class="text-danger mb-2">R$ <%= financialStats.totalPaid ? financialStats.totalPaid.toFixed(2).replace('.', ',') : '0,00' %></h3>
+                                        <h6 class="text-muted mb-0">Total Gasto</h6>
+                                        <small class="text-muted">Todos os tempos</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="p-4 border rounded bg-light">
+                                        <h3 class="text-warning mb-2">R$ <%= financialStats.monthlyTotal ? financialStats.monthlyTotal.toFixed(2).replace('.', ',') : '0,00' %></h3>
+                                        <h6 class="text-muted mb-0">Este Mês</h6>
+                                        <small class="text-muted"><%= new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) %></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="p-4 border rounded bg-light">
+                                        <h3 class="text-info mb-2"><%= financialStats.transactionCount || 0 %></h3>
+                                        <h6 class="text-muted mb-0">Pagamentos</h6>
+                                        <small class="text-muted">Realizados</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="p-4 border rounded bg-light">
+                                        <h3 class="text-secondary mb-2">R$ <%= financialStats.avgTransaction ? financialStats.avgTransaction.toFixed(2).replace('.', ',') : '0,00' %></h3>
+                                        <h6 class="text-muted mb-0">Valor Médio</h6>
+                                        <small class="text-muted">Por transação</small>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } else if (user.userType === 'worker') { %>
+                            <!-- Resumo para Worker (apenas recebimentos) -->
+                            <div class="row text-center mb-4">
+                                <div class="col-md-2">
+                                    <div class="p-4 border rounded bg-light">
+                                        <h3 class="text-success mb-2">R$ <%= financialStats.totalReceived ? financialStats.totalReceived.toFixed(2).replace('.', ',') : '0,00' %></h3>
+                                        <h6 class="text-muted mb-0">Total Recebido</h6>
+                                        <small class="text-muted">Bruto</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="p-4 border rounded bg-light">
+                                        <h3 class="text-warning mb-2">R$ <%= financialStats.totalFees ? financialStats.totalFees.toFixed(2).replace('.', ',') : '0,00' %></h3>
+                                        <h6 class="text-muted mb-0">Taxas Pagas</h6>
+                                        <small class="text-muted">Plataforma</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="p-4 border rounded bg-light">
+                                        <h3 class="text-primary mb-2">R$ <%= financialStats.netTotal ? financialStats.netTotal.toFixed(2).replace('.', ',') : '0,00' %></h3>
+                                        <h6 class="text-muted mb-0">Total Líquido</h6>
+                                        <small class="text-muted">Após taxas</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="p-4 border rounded bg-light">
+                                        <h3 class="text-info mb-2">R$ <%= financialStats.monthlyTotal ? financialStats.monthlyTotal.toFixed(2).replace('.', ',') : '0,00' %></h3>
+                                        <h6 class="text-muted mb-0">Este Mês</h6>
+                                        <small class="text-muted"><%= new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) %></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="p-4 border rounded bg-light">
+                                        <h3 class="text-dark mb-2"><%= financialStats.transactionCount || 0 %></h3>
+                                        <h6 class="text-muted mb-0">Recebimentos</h6>
+                                        <small class="text-muted">Realizados</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="p-4 border rounded bg-light">
+                                        <h3 class="text-secondary mb-2">R$ <%= financialStats.avgTransaction ? financialStats.avgTransaction.toFixed(2).replace('.', ',') : '0,00' %></h3>
+                                        <h6 class="text-muted mb-0">Valor Médio</h6>
+                                        <small class="text-muted">Por transação</small>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+                        
+                        <% if (financialStats.recentTransactions && financialStats.recentTransactions.length > 0) { %>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="mb-0"><i class="fas fa-clock me-2"></i>Histórico de Transações</h6>
+                            <small class="text-muted">Últimas <%= financialStats.recentTransactions.length %> transações</small>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th><i class="fas fa-calendar me-1"></i>Data</th>
+                                        <th><i class="fas fa-tag me-1"></i>Tipo</th>
+                                        <th><i class="fas fa-info-circle me-1"></i>Descrição</th>
+                                        <th class="text-end"><i class="fas fa-dollar-sign me-1"></i>Valor</th>
+                                        <th class="text-end"><i class="fas fa-calculator me-1"></i>Taxa</th>
+                                        <th class="text-end"><i class="fas fa-money-bill-wave me-1"></i>Líquido</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% financialStats.recentTransactions.forEach(transaction => { %>
+                                        <tr>
+                                            <td>
+                                                <small><%= new Date(transaction.transactionDate).toLocaleDateString('pt-BR') %></small>
+                                            </td>
+                                            <td>
+                                                <% if (transaction.type === 'payment') { %>
+                                                    <span class="badge bg-danger">Pagamento</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-success">Recebimento</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (transaction.requestDetails) { %>
+                                                    <%= transaction.requestDetails.serviceTitle || transaction.description %>
+                                                <% } else { %>
+                                                    <%= transaction.description %>
+                                                <% } %>
+                                            </td>
+                                            <td class="text-end">
+                                                <strong>R$ <%= transaction.amount.toFixed(2).replace('.', ',') %></strong>
+                                            </td>
+                                            <td class="text-end text-muted">
+                                                R$ <%= (transaction.amount - (transaction.netAmount || transaction.amount)).toFixed(2).replace('.', ',') %>
+                                            </td>
+                                            <td class="text-end">
+                                                <strong class="<%= transaction.type === 'payment' ? 'text-danger' : 'text-success' %>">
+                                                    R$ <%= (transaction.netAmount || transaction.amount).toFixed(2).replace('.', ',') %>
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <% } else { %>
+                        <hr>
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-receipt fa-3x mb-3"></i>
+                            <h5>Nenhuma transação realizada ainda</h5>
+                            <p>Quando você realizar transações, elas aparecerão aqui.</p>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script>
+        // Função para exportar relatório
+        function exportReport(format) {
+            const userType = '<%= user.userType %>';
+            const userName = '<%= user.name %>';
+            const financialStats = <%- JSON.stringify(financialStats || {}) %>;
+            
+            // Verificar se há dados para exportar
+            if (!financialStats || (!financialStats.recentTransactions && !financialStats.totalPaid && !financialStats.totalReceived)) {
+                alert('Não há dados financeiros para exportar ainda.');
+                return;
+            }
+            
+            if (format === 'pdf') {
+                exportToPDF(userType, userName, financialStats);
+            } else if (format === 'csv') {
+                exportToCSV(userType, userName, financialStats);
+            }
+        }
+
+        // Exportar para PDF
+        function exportToPDF(userType, userName, stats) {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Configurações
+                const pageWidth = doc.internal.pageSize.width;
+                const margin = 20;
+                
+                // Título
+                doc.setFontSize(20);
+                doc.setTextColor(102, 126, 234);
+                doc.text('Relatório Financeiro - Find Workers', margin, 30);
+                
+                // Informações do usuário
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                doc.text('Nome: ' + userName, margin, 50);
+                doc.text('Tipo: ' + (userType === 'client' ? 'Cliente' : 'Prestador'), margin, 60);
+                doc.text('Data: ' + new Date().toLocaleDateString('pt-BR'), margin, 70);
+                
+                // Linha separadora
+                doc.setLineWidth(0.5);
+                doc.line(margin, 75, pageWidth - margin, 75);
+                
+                let yPosition = 90;
+                
+                // Resumo financeiro
+                doc.setFontSize(14);
+                doc.setTextColor(51, 51, 51);
+                doc.text('Resumo Financeiro', margin, yPosition);
+                yPosition += 15;
+                
+                doc.setFontSize(10);
+                if (userType === 'client') {
+                    doc.text('Total Gasto: R$ ' + ((stats.totalPaid || 0).toFixed(2).replace('.', ',')), margin, yPosition);
+                    yPosition += 10;
+                    doc.text('Este Mês: R$ ' + ((stats.monthlyTotal || 0).toFixed(2).replace('.', ',')), margin, yPosition);
+                    yPosition += 10;
+                    doc.text('Pagamentos Realizados: ' + (stats.transactionCount || 0), margin, yPosition);
+                    yPosition += 10;
+                } else {
+                    doc.text('Total Recebido: R$ ' + ((stats.totalReceived || 0).toFixed(2).replace('.', ',')), margin, yPosition);
+                    yPosition += 10;
+                    doc.text('Taxas Pagas: R$ ' + ((stats.totalFees || 0).toFixed(2).replace('.', ',')), margin, yPosition);
+                    yPosition += 10;
+                    doc.text('Total Líquido: R$ ' + ((stats.netTotal || 0).toFixed(2).replace('.', ',')), margin, yPosition);
+                    yPosition += 10;
+                    doc.text('Este Mês: R$ ' + ((stats.monthlyTotal || 0).toFixed(2).replace('.', ',')), margin, yPosition);
+                    yPosition += 10;
+                    doc.text('Recebimentos Realizados: ' + (stats.transactionCount || 0), margin, yPosition);
+                    yPosition += 15;
+                }
+                
+                // Tabela de transações
+                if (stats.recentTransactions && stats.recentTransactions.length > 0) {
+                    const tableData = stats.recentTransactions.map(function(transaction) {
+                        return [
+                            new Date(transaction.transactionDate).toLocaleDateString('pt-BR'),
+                            transaction.type === 'payment' ? 'Pagamento' : 'Recebimento',
+                            (transaction.requestDetails && transaction.requestDetails.serviceTitle) ? transaction.requestDetails.serviceTitle : (transaction.description || ''),
+                            'R$ ' + transaction.amount.toFixed(2).replace('.', ','),
+                            'R$ ' + (transaction.netAmount || transaction.amount).toFixed(2).replace('.', ',')
+                        ];
+                    });
+                    
+                    doc.autoTable({
+                        startY: yPosition,
+                        head: [['Data', 'Tipo', 'Descrição', 'Valor', 'Líquido']],
+                        body: tableData,
+                        theme: 'grid',
+                        styles: { fontSize: 8 },
+                        headStyles: { fillColor: [102, 126, 234] }
+                    });
+                }
+                
+                // Salvar o PDF
+                doc.save('relatorio-financeiro-' + new Date().toISOString().split('T')[0] + '.pdf');
+            } catch (error) {
+                alert('Erro ao gerar o arquivo PDF. Verifique se as bibliotecas estão carregadas.');
+            }
+        }
+
+        // Exportar para CSV
+        function exportToCSV(userType, userName, stats) {
+            try {
+                var csvContent = "data:text/csv;charset=utf-8,";
+                
+                // Cabeçalho
+                csvContent += "Relatório Financeiro - Find Workers\n";
+                csvContent += "Nome," + userName + "\n";
+                csvContent += "Tipo," + (userType === 'client' ? 'Cliente' : 'Prestador') + "\n";
+                csvContent += "Data," + new Date().toLocaleDateString('pt-BR') + "\n\n";
+                
+                // Resumo
+                csvContent += "Resumo Financeiro\n";
+                if (userType === 'client') {
+                    csvContent += "Total Gasto,R$ " + (stats.totalPaid || 0).toFixed(2).replace('.', ',') + "\n";
+                    csvContent += "Este Mês,R$ " + (stats.monthlyTotal || 0).toFixed(2).replace('.', ',') + "\n";
+                    csvContent += "Pagamentos Realizados," + (stats.transactionCount || 0) + "\n";
+                } else {
+                    csvContent += "Total Recebido,R$ " + (stats.totalReceived || 0).toFixed(2).replace('.', ',') + "\n";
+                    csvContent += "Taxas Pagas,R$ " + (stats.totalFees || 0).toFixed(2).replace('.', ',') + "\n";
+                    csvContent += "Total Líquido,R$ " + (stats.netTotal || 0).toFixed(2).replace('.', ',') + "\n";
+                    csvContent += "Este Mês,R$ " + (stats.monthlyTotal || 0).toFixed(2).replace('.', ',') + "\n";
+                    csvContent += "Recebimentos Realizados," + (stats.transactionCount || 0) + "\n";
+                }
+                
+                // Transações
+                if (stats.recentTransactions && stats.recentTransactions.length > 0) {
+                    csvContent += "\nHistórico de Transações\n";
+                    csvContent += "Data,Tipo,Descrição,Valor,Taxa,Líquido\n";
+                    
+                    stats.recentTransactions.forEach(function(transaction) {
+                        var date = new Date(transaction.transactionDate).toLocaleDateString('pt-BR');
+                        var type = transaction.type === 'payment' ? 'Pagamento' : 'Recebimento';
+                        var description = '';
+                        if (transaction.requestDetails && transaction.requestDetails.serviceTitle) {
+                            description = transaction.requestDetails.serviceTitle.replace(/,/g, ';');
+                        } else if (transaction.description) {
+                            description = transaction.description.replace(/,/g, ';');
+                        }
+                        var amount = "R$ " + transaction.amount.toFixed(2).replace('.', ',');
+                        var fee = "R$ " + (transaction.amount - (transaction.netAmount || transaction.amount)).toFixed(2).replace('.', ',');
+                        var net = "R$ " + (transaction.netAmount || transaction.amount).toFixed(2).replace('.', ',');
+                        
+                        csvContent += date + "," + type + ',"' + description + '",' + amount + "," + fee + "," + net + "\n";
+                    });
+                }
+                
+                // Download do arquivo
+                var encodedUri = encodeURI(csvContent);
+                var link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "relatorio-financeiro-" + new Date().toISOString().split('T')[0] + ".csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                alert('Erro ao gerar o arquivo CSV.');
+            }
+        }
+
         // Validação de senha
         document.getElementById('confirmNewPassword').addEventListener('input', function() {
             const newPassword = document.getElementById('newPassword').value;

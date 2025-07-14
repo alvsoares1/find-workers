@@ -14,7 +14,10 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <%- include('../partials/sidebar', { user: user, currentPage: 'services' }) %>
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar p-3">
+                <%- include('../partials/sidebar', { user: user, currentPage: 'services' }) %>
+            </div>
 
             <!-- Main Content -->
             <div class="col-md-9 col-lg-10 main-content p-4">
@@ -89,11 +92,12 @@
                 <div class="row" id="servicesList">
                     <% if (services && services.length > 0) { %>
                         <% services.forEach(function(service) { %>
-                            <div class="col-md-6 col-lg-4 mb-4 service-card" 
-                                 data-category="<%= service.category %>" 
-                                 data-price="<%= service.price %>"
-                                 data-search="<%= service.title.toLowerCase() %> <%= service.description.toLowerCase() %>"
-                                 data-available="<%= service.status === 'disponível' %>">
+                <div class="col-md-6 col-lg-4 mb-4 service-card" 
+                 data-service-id="<%= service._id %>"
+                 data-category="<%= service.category %>" 
+                 data-price="<%= service.price %>"
+                 data-search="<%= service.title.toLowerCase() %> <%= service.description.toLowerCase() %>"
+                 data-available="<%= service.status === 'disponível' %>">
                                 <div class="card h-100 <%= service.status !== 'disponível' ? 'opacity-75' : '' %>">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h6 class="mb-0"><%= service.title %></h6>

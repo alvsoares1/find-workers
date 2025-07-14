@@ -1,4 +1,5 @@
 const Request = require('../models/Request');
+const { REQUEST_STATUS, PAYMENT_STATUS } = require('../utils/constants');
 
 const requestService = {
     async findAll() {
@@ -115,13 +116,51 @@ const requestService = {
 
     async updateStatus(id, status) {
         try {
+            const request = await Request.findById(id);
+            if (!request) {
+                throw new Error('Solicitação não encontrada');
+            }
+
+            // Atualizar o status
             const updatedRequest = await Request.findByIdAndUpdate(
                 id,
-                { status }
+                { 
+                    status,
+                    paymentStatus: status === REQUEST_STATUS.COMPLETED ? PAYMENT_STATUS.COMPLETED : request.paymentStatus || PAYMENT_STATUS.PENDING
+                }
             );
-            
-            if (!updatedRequest) {
-                throw new Error('Solicitação não encontrada');
+
+            // Se o status for 'concluida', processar pagamento automático
+            if (status === REQUEST_STATUS.COMPLETED) {
+                try {
+                    const transactionService = require('./transactionService');
+                    
+                    // Buscar dados completos da solicitação para processar pagamento
+                    const populatedRequest = await Request.populateRequestData(updatedRequest);
+                    
+                    // Processar pagamento automaticamente
+                    await transactionService.processPaymentFromObject({
+                        clientId: populatedRequest.clientId._id,
+                        workerId: populatedRequest.serviceId.workerId._id || populatedRequest.serviceId.workerId,
+                        serviceId: populatedRequest.serviceId._id,
+                        requestId: populatedRequest._id,
+                        amount: populatedRequest.serviceId.price,
+                        description: `Pagamento pelo serviço: ${populatedRequest.serviceId.title}`,
+                        transactionDate: new Date()
+                    });
+
+                    // Atualizar a solicitação com as transações criadas
+                    await Request.findByIdAndUpdate(id, {
+                        paymentStatus: PAYMENT_STATUS.COMPLETED
+                    });
+
+                    Logger.info(`Pagamento processado automaticamente para solicitação ${id}`);
+                } catch (financialError) {
+                    Logger.error('Erro ao processar pagamento automático:', financialError);
+                    await Request.findByIdAndUpdate(id, {
+                        paymentStatus: PAYMENT_STATUS.FAILED
+                    });
+                }
             }
             
             return await Request.populateRequestData(updatedRequest);
@@ -130,10 +169,9 @@ const requestService = {
         }
     },
 
-    // Métodos específicos para o fluxo de negócio
     async getPendingRequests() {
         try {
-            return await this.findByStatus('pendente');
+            return await this.findByStatus(REQUEST_STATUS.PENDING);
         } catch (error) {
             throw new Error(`Erro ao buscar solicitações pendentes: ${error.message}`);
         }
@@ -147,12 +185,12 @@ const requestService = {
                 throw new Error('Solicitação não encontrada');
             }
             
-            if (request.status !== 'pendente') {
+            if (request.status !== REQUEST_STATUS.PENDING) {
                 throw new Error('Solicitação não está pendente');
             }
 
             // Atualizar status para aceita
-            return await this.updateStatus(requestId, 'aceita');
+            return await this.updateStatus(requestId, REQUEST_STATUS.ACCEPTED);
         } catch (error) {
             throw new Error(`Erro ao aceitar solicitação: ${error.message}`);
         }
@@ -165,11 +203,11 @@ const requestService = {
                 throw new Error('Solicitação não encontrada');
             }
 
-            if (request.status !== 'pendente') {
+            if (request.status !== REQUEST_STATUS.PENDING) {
                 throw new Error('Solicitação não está pendente');
             }
 
-            return await this.updateStatus(requestId, 'rejeitada');
+            return await this.updateStatus(requestId, REQUEST_STATUS.REJECTED);
         } catch (error) {
             throw new Error(`Erro ao rejeitar solicitação: ${error.message}`);
         }
@@ -182,11 +220,11 @@ const requestService = {
                 throw new Error('Solicitação não encontrada');
             }
 
-            if (request.status !== 'aceita' && request.status !== 'em_andamento') {
+            if (request.status !== REQUEST_STATUS.ACCEPTED && request.status !== REQUEST_STATUS.IN_PROGRESS) {
                 throw new Error('Solicitação deve estar aceita ou em andamento para ser concluída');
             }
 
-            return await this.updateStatus(requestId, 'concluida');
+            return await this.updateStatus(requestId, REQUEST_STATUS.COMPLETED);
         } catch (error) {
             throw new Error(`Erro ao concluir solicitação: ${error.message}`);
         }
@@ -199,11 +237,11 @@ const requestService = {
                 throw new Error('Solicitação não encontrada');
             }
 
-            if (request.status !== 'aceita') {
+            if (request.status !== REQUEST_STATUS.ACCEPTED) {
                 throw new Error('Solicitação deve estar aceita para ser iniciada');
             }
 
-            return await this.updateStatus(requestId, 'em_andamento');
+            return await this.updateStatus(requestId, REQUEST_STATUS.IN_PROGRESS);
         } catch (error) {
             throw new Error(`Erro ao iniciar solicitação: ${error.message}`);
         }

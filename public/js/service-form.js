@@ -1,8 +1,4 @@
-// Find Workers - Service Form JavaScript
-console.log('🔧 service-form.js carregado!');
-
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 DOM carregado, inicializando formulário...');
     initializeForm();
     setupValidation();
     animateForm();
@@ -18,15 +14,12 @@ function isEditing() {
 
 // Inicializar formulário
 function initializeForm() {
-    console.log('📋 Inicializando formulário...');
     const form = document.getElementById('serviceForm');
     
     if (form) {
-        console.log('✅ Formulário encontrado, adicionando event listener...');
         form.addEventListener('submit', handleSubmit);
     } else {
-        console.error('❌ Formulário não encontrado! ID: serviceForm');
-    }
+        }
 
     // Configurar tags input
     setupTagsInput();
@@ -215,40 +208,24 @@ function saveAsDraft() {
 async function handleSubmit(e) {
     e.preventDefault();
     
-    console.log('🚀 Iniciando submissão do formulário...');
-    
     const form = e.target;
     const submitButton = form.querySelector('button[type="submit"]');
     const originalText = submitButton.innerHTML;
     
     // Validar formulário
-    console.log('📋 Validando formulário...');
     if (!validateForm()) {
-        console.error('❌ Formulário inválido');
         showAlert('danger', 'Por favor, corrija os erros no formulário.');
         return;
     }
-    console.log('✅ Formulário válido');
-    
     try {
         submitButton.disabled = true;
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Salvando...';
         
         const formData = getFormData();
-        console.log('📦 Dados do formulário coletados:', formData);
-        
         const isEdit = isEditing();
-        console.log('🔄 Modo de edição:', isEdit);
-        
         // Chamada real para o backend
         const url = isEdit ? `/services/${getServiceId()}` : '/services';
         const method = isEdit ? 'PUT' : 'POST';
-        
-        console.log('🌐 Fazendo requisição:', {
-            url,
-            method,
-            formData
-        });
         
         const response = await fetch(url, {
             method: method,
@@ -259,21 +236,12 @@ async function handleSubmit(e) {
             body: JSON.stringify(formData)
         });
         
-        console.log('📨 Resposta recebida:', {
-            status: response.status,
-            ok: response.ok,
-            statusText: response.statusText
-        });
-        
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('❌ Erro na resposta:', errorText);
             throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
         }
         
         const result = await response.json();
-        console.log('✅ Resultado:', result);
-        
         showAlert('success', `Serviço ${isEdit ? 'atualizado' : 'criado'} com sucesso!`);
         
         // Limpar rascunho
@@ -294,39 +262,26 @@ async function handleSubmit(e) {
 
 // Validar formulário completo
 function validateForm() {
-    console.log('🔍 Iniciando validação do formulário...');
-    
     const form = document.getElementById('serviceForm');
     if (!form) {
-        console.error('❌ Formulário não encontrado!');
         return false;
     }
     
     const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
-    console.log('📝 Campos obrigatórios encontrados:', requiredFields.length);
-    
     let isValid = true;
     
     requiredFields.forEach((field, index) => {
         const fieldValid = validateField({ target: field });
-        console.log(`📌 Campo ${index + 1} (${field.id || field.name}):`, {
-            value: field.value,
-            valid: fieldValid
-        });
-        
         if (!fieldValid) {
             isValid = false;
         }
     });
     
-    console.log('📋 Resultado da validação:', isValid);
     return isValid;
 }
 
 // Coletar dados do formulário
 function getFormData() {
-    console.log('📊 Coletando dados do formulário...');
-    
     const tagsElement = document.getElementById('serviceTags');
     const tags = tagsElement ? tagsElement.value
         .split(',')
@@ -347,8 +302,6 @@ function getFormData() {
         allowsScheduling: document.getElementById('allowsScheduling')?.checked || true
     };
     
-    console.log('📦 Dados coletados:', formData);
-    
     // Verificar elementos ausentes
     const elementsToCheck = [
         'serviceTitle', 'serviceDescription', 'serviceCategory', 'servicePrice',
@@ -359,8 +312,7 @@ function getFormData() {
     elementsToCheck.forEach(id => {
         const element = document.getElementById(id);
         if (!element) {
-            console.warn(`⚠️ Elemento não encontrado: ${id}`);
-        }
+            }
     });
     
     return formData;
@@ -371,13 +323,6 @@ function getServiceId() {
     // Extrair ID do URL /services/{id}/edit ou /services/{id}
     const pathParts = window.location.pathname.split('/');
     const serviceIndex = pathParts.indexOf('services');
-    
-    console.log('🔍 Debugging getServiceId:', {
-        pathname: window.location.pathname,
-        pathParts,
-        serviceIndex,
-        serviceId: pathParts[serviceIndex + 1]
-    });
     
     if (serviceIndex !== -1 && pathParts[serviceIndex + 1]) {
         return pathParts[serviceIndex + 1];
@@ -506,8 +451,7 @@ window.addEventListener('load', function() {
                 showAlert('info', 'Rascunho restaurado com sucesso!');
             }
         } catch (e) {
-            console.error('Erro ao restaurar rascunho:', e);
-        }
+            }
     }
 });
 
@@ -526,3 +470,4 @@ function restoreFormData(data) {
         }
     });
 }
+

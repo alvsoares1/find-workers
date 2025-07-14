@@ -106,7 +106,7 @@ module.exports = {
 };
 
 process.on('SIGINT', async () => {
-    console.log('\nFechando conexão MongoDB...');
+    Logger.info('Fechando conexão MongoDB...');
     await closeDB();
     process.exit(0);
 });
