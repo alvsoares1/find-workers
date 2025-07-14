@@ -13,6 +13,10 @@ class User {
         this.phone = userData.phone ? Validator.sanitizeString(userData.phone) : null;
         this.createdAt = userData.createdAt || new Date();
         this.updatedAt = userData.updatedAt || new Date();
+        this.rating = userData.rating || {
+            average: 0,
+            totalRatings: 0
+        };
         
         if (userData._id) {
             this._id = new ObjectId(userData._id);
@@ -90,7 +94,8 @@ class User {
             userType: this.userType,
             phone: this.phone,
             createdAt: this.createdAt,
-            updatedAt: this.updatedAt
+            updatedAt: this.updatedAt,
+            rating: this.rating
         };
         
         // Incluir senha apenas se necessário
@@ -113,7 +118,8 @@ class User {
             email: this.email,
             userType: this.userType,
             phone: this.phone,
-            createdAt: this.createdAt
+            createdAt: this.createdAt,
+            rating: this.rating
         };
     }
 
