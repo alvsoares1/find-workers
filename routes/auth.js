@@ -292,6 +292,25 @@ router.get('/register', redirectIfAuthenticated, (req, res) => {
     });
 });
 
+router.post('/rate/:id', requireAuth, async (req, res) => {
+    const { id } = req.params;
+    const { rating } = req.body;
+
+    try {
+        const numericRating = parseFloat(rating);
+        if (isNaN(numericRating)) {
+            return res.status(400).json({ error: 'Nota inválida' });
+        }
+
+        const updatedUser = await userService.rateUser(id, numericRating);
+        res.redirect('/some-success-page?success=' + encodeURIComponent('Avaliação registrada com sucesso'));
+    } catch (error) {
+        Logger.error('Erro ao avaliar usuário:', error);
+        res.redirect('/some-failure-page?error=' + encodeURIComponent(error.message));
+    }
+});
+
+
 router.post('/register', redirectIfAuthenticated, async (req, res) => {
     try {
         const { name, email, phone, userType, password, confirmPassword } = req.body;
