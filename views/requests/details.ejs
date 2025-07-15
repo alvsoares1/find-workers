@@ -4,12 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap                                    <a href="/profile" class="btn btn-outline-primary">
-                                        <i class="fas fa-chart-line me-1"></i>Ver Financeiro.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 <body>
+    <%
+    // Definir funções helper para o template no início do arquivo
+    function getStatusColor(status) {
+        const colors = {
+            'pendente': 'warning',
+            'aceita': 'info', 
+            'rejeitada': 'danger',
+            'em_andamento': 'primary',
+            'concluida': 'success',
+            'cancelada': 'secondary'
+        };
+        return colors[status] || 'secondary';
+    }
+
+    function getStatusText(status) {
+        const texts = {
+            'pendente': 'Pendente',
+            'aceita': 'Aceita',
+            'rejeitada': 'Rejeitada', 
+            'em_andamento': 'Em Andamento',
+            'concluida': 'Concluída',
+            'cancelada': 'Cancelada'
+        };
+        return texts[status] || status;
+    }
+    %>
+    
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
@@ -84,7 +112,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <p><strong>Categoria:</strong> <%= request.serviceId.category %></p>
-                                        <p><strong>Preço:</strong> R$ <%= request.serviceId.price.toFixed(2) %></p>
+                                        <p><strong>Preço:</strong> R$ <%= parseFloat(request.serviceId.price || 0).toFixed(2).replace('.', ',') %></p>
                                     </div>
                                 </div>
                             </div>
@@ -104,7 +132,7 @@
                             <div class="card-body">
                                 <% if (userType === 'client') { %>
                                     <!-- Mostrar info do trabalhador -->
-                                    <% if (request.workerId && (request.status === 'aceita' || request.status === 'em_andamento' || request.status === 'concluida')) { %>
+                                    <% if (request.workerId && request.workerId.name && (request.status === 'aceita' || request.status === 'em_andamento' || request.status === 'concluida')) { %>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <p><strong>Nome:</strong> <%= request.workerId.name %></p>
@@ -122,15 +150,19 @@
                                     <% } %>
                                 <% } else { %>
                                     <!-- Mostrar info do cliente -->
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <p><strong>Nome:</strong> <%= request.clientId.name %></p>
-                                            <p><strong>Email:</strong> <%= request.clientId.email %></p>
+                                    <% if (request.clientId && request.clientId.name) { %>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p><strong>Nome:</strong> <%= request.clientId.name %></p>
+                                                <p><strong>Email:</strong> <%= request.clientId.email %></p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong>Tipo:</strong> <%= request.clientId.userType %></p>
+                                            </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <p><strong>Tipo:</strong> <%= request.clientId.userType %></p>
-                                        </div>
-                                    </div>
+                                    <% } else { %>
+                                        <p class="text-muted">Informações do cliente não disponíveis.</p>
+                                    <% } %>
                                 <% } %>
                             </div>
                         </div>
@@ -152,7 +184,7 @@
                                             </div>
                                             <div class="stat-info">
                                                 <h6>Valor do Serviço</h6>
-                                                <h5 class="text-primary">R$ <%= financialInfo.amount.toFixed(2).replace('.', ',') %></h5>
+                                                <h5 class="text-primary">R$ <%= (financialInfo.amount || 0).toFixed(2).replace('.', ',') %></h5>
                                             </div>
                                         </div>
                                     </div>
@@ -163,7 +195,7 @@
                                             </div>
                                             <div class="stat-info">
                                                 <h6>Taxa da Plataforma</h6>
-                                                <h5 class="text-warning">R$ <%= financialInfo.platformFee.toFixed(2).replace('.', ',') %></h5>
+                                                <h5 class="text-warning">R$ <%= (financialInfo.platformFee || 0).toFixed(2).replace('.', ',') %></h5>
                                                 <small class="text-muted">5% do valor</small>
                                             </div>
                                         </div>
@@ -178,7 +210,7 @@
                                             </div>
                                             <div class="stat-info">
                                                 <h6>Valor Líquido (Prestador)</h6>
-                                                <h5 class="text-success">R$ <%= financialInfo.netAmount.toFixed(2).replace('.', ',') %></h5>
+                                                <h5 class="text-success">R$ <%= (financialInfo.netAmount || 0).toFixed(2).replace('.', ',') %></h5>
                                             </div>
                                         </div>
                                     </div>
@@ -223,7 +255,7 @@
                                                 </div>
                                                 <div class="text-end">
                                                     <div class="<%= transaction.type === 'payment' ? 'text-danger' : 'text-success' %>">
-                                                        <strong>R$ <%= transaction.netAmount.toFixed(2).replace('.', ',') %></strong>
+                                                        <strong>R$ <%= (transaction.netAmount || 0).toFixed(2).replace('.', ',') %></strong>
                                                     </div>
                                                     <small class="text-muted">
                                                         <%= new Date(transaction.transactionDate).toLocaleDateString('pt-BR') %>
@@ -236,7 +268,7 @@
                                 <% } %>
 
                                 <div class="mt-3 text-center">
-                                    <a href="/financial-history" class="btn btn-outline-primary">
+                                    <a href="/profile" class="btn btn-outline-primary">
                                         <i class="fas fa-chart-line me-2"></i>Ver Histórico Completo
                                     </a>
                                 </div>
@@ -377,6 +409,7 @@
                 } else {
                     alert('Erro: ' + result.message);
                 }                } catch (error) {
+                    console.error('Erro ao atualizar status:', error);
                     alert('Erro ao atualizar status da solicitação');
                 }
         }
@@ -403,12 +436,44 @@
                 } else {
                     alert('Erro: ' + result.message);
                 }                } catch (error) {
+                    console.error('Erro ao deletar solicitação:', error);
                     alert('Erro ao deletar solicitação');
                 }
         }
     </script>
 
     <style>
+        .financial-stat {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+        }
+
+        .stat-info h6 {
+            margin-bottom: 5px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .stat-info h5 {
+            margin-bottom: 0;
+            font-weight: bold;
+        }
+
         .timeline {
             position: relative;
             padding-left: 20px;
@@ -452,32 +517,5 @@
             font-size: 12px;
         }
     </style>
-
-    <%
-    // Definir funções helper para o template
-    function getStatusColor(status) {
-        const colors = {
-            'pendente': 'warning',
-            'aceita': 'info', 
-            'rejeitada': 'danger',
-            'em_andamento': 'primary',
-            'concluida': 'success',
-            'cancelada': 'secondary'
-        };
-        return colors[status] || 'secondary';
-    }
-
-    function getStatusText(status) {
-        const texts = {
-            'pendente': 'Pendente',
-            'aceita': 'Aceita',
-            'rejeitada': 'Rejeitada', 
-            'em_andamento': 'Em Andamento',
-            'concluida': 'Concluída',
-            'cancelada': 'Cancelada'
-        };
-        return texts[status] || status;
-    }
-    %>
 </body>
 </html>
