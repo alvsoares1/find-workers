@@ -81,7 +81,7 @@
                                  data-search="<%= request.description.toLowerCase() %> <%= request.serviceId.title.toLowerCase() %>">
                                 <div class="card h-100">
                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h6 class="mb-0"><%= request.serviceId.title %></h6>
+                                        <h6 class="mb-0" style="color: white;"><%= request.serviceId.title %></h6>
                                         <span class="badge bg-<%= getStatusColor(request.status) %>">
                                             <%= getStatusText(request.status) %>
                                         </span>
