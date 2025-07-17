@@ -281,7 +281,7 @@
                                 </a>
 
                                 <!-- Botão de deletar (apenas para clientes e solicitações não em andamento) -->
-                                <% if (userType === 'cliente' && request.status !== 'em_andamento') { %>
+                                <% if (userType === 'client' && request.status !== 'em_andamento') { %>
                                     <button class="btn btn-outline-danger w-100 mt-2" onclick="deleteRequest()">
                                         <i class="bi bi-trash"></i> Deletar Solicitação
                                     </button>
@@ -385,6 +385,7 @@
             }
 
             try {
+                console.log('Tentando deletar a solicitação com ID:', '<%= request._id %>');
                 const response = await fetch(`/requests/<%= request._id %>`, {
                     method: 'DELETE',
                     headers: {
@@ -399,10 +400,11 @@
                     window.location.href = '/requests';
                 } else {
                     alert('Erro: ' + result.message);
-                }                } catch (error) {
-                    console.error('Erro ao deletar solicitação:', error);
-                    alert('Erro ao deletar solicitação');
-                }
+                }                
+            } catch (error) {
+                console.error('Erro ao deletar solicitação:', error);
+                alert('Erro ao deletar solicitação');
+            }
         }
     </script>
 
