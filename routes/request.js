@@ -357,8 +357,10 @@ router.delete('/:id', async (req, res) => {
         const requestId = req.params.id;
         const user = req.user;
 
+        // Buscar a solicitação uma única vez para verificar permissões
         const request = await requestService.findById(requestId);
         if (!request) {
+            Logger.warn(`Solicitação ${requestId} não encontrada`);
             return res.status(404).json({
                 success: false,
                 message: 'Solicitação não encontrada'
@@ -367,22 +369,25 @@ router.delete('/:id', async (req, res) => {
 
         // Verificar se é o cliente que criou a solicitação
         if (user.userType !== USER_TYPES.CLIENT || request.clientId._id.toString() !== user._id.toString()) {
+            Logger.warn(`Usuário ${user._id} sem permissão para deletar solicitação ${requestId}`);
             return res.status(403).json({
                 success: false,
                 message: 'Você não tem permissão para deletar esta solicitação'
             });
         }
 
-        // Não permitir deletar solicitações em andamento
+        // Não permitir deletar apenas solicitações em andamento
         if (request.status === 'em_andamento') {
+            Logger.warn(`Tentativa de deletar solicitação ${requestId} em andamento`);
             return res.status(400).json({
                 success: false,
                 message: 'Não é possível deletar solicitação em andamento'
             });
         }
 
-        await requestService.delete(requestId);
-
+        Logger.info(`Deletando solicitação ${requestId}...`);
+        await Request.findByIdAndDelete(requestId);
+    
         Logger.info(`Solicitação ${requestId} deletada pelo cliente ${user._id}`);
 
         res.json({
@@ -393,7 +398,7 @@ router.delete('/:id', async (req, res) => {
         Logger.error('Erro ao deletar solicitação:', error);
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message || 'Erro interno do servidor'
         });
     }
 });
