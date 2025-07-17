@@ -3,16 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/css/common.css">
-    <link rel="stylesheet" href="/css/dashboard.css">
-</head>
-<body>
     <%
-    // Definir funções helper para o template no início do arquivo
+    // Definir funções helper para o template
     function getStatusColor(status) {
         const colors = {
             'pendente': 'warning',
@@ -37,7 +29,14 @@
         return texts[status] || status;
     }
     %>
-    
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body> 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
@@ -236,41 +235,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <% if (financialInfo.transactions && financialInfo.transactions.length > 0) { %>
-                                <hr>
-                                <h6><i class="fas fa-list me-2"></i>Transações</h6>
-                                <div class="list-group list-group-flush">
-                                    <% financialInfo.transactions.forEach(transaction => { %>
-                                        <div class="list-group-item border-0 px-0">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <% if (transaction.type === 'payment') { %>
-                                                        <span class="badge bg-danger me-2">Pagamento</span>
-                                                    <% } else { %>
-                                                        <span class="badge bg-success me-2">Recebimento</span>
-                                                    <% } %>
-                                                    <small><%= transaction.description %></small>
-                                                </div>
-                                                <div class="text-end">
-                                                    <div class="<%= transaction.type === 'payment' ? 'text-danger' : 'text-success' %>">
-                                                        <strong>R$ <%= (transaction.netAmount || 0).toFixed(2).replace('.', ',') %></strong>
-                                                    </div>
-                                                    <small class="text-muted">
-                                                        <%= new Date(transaction.transactionDate).toLocaleDateString('pt-BR') %>
-                                                    </small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <% }); %>
-                                </div>
-                                <% } %>
-
-                                <div class="mt-3 text-center">
-                                    <a href="/profile" class="btn btn-outline-primary">
-                                        <i class="fas fa-chart-line me-2"></i>Ver Histórico Completo
-                                    </a>
                                 </div>
                             </div>
                         </div>
